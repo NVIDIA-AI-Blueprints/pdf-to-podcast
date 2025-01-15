@@ -13,7 +13,8 @@ RUN set -x \
 
 WORKDIR /workspace
 
-RUN pip install fastapi uvicorn edge-tts elevenlabs pydantic redis httpx \
+RUN pip install uv
+RUN uv pip install --system fastapi uvicorn edge-tts elevenlabs pydantic redis httpx \
     opentelemetry-api \
     opentelemetry-sdk \
     opentelemetry-instrumentation-fastapi \
@@ -26,7 +27,7 @@ RUN pip install fastapi uvicorn edge-tts elevenlabs pydantic redis httpx \
 
 # Copy shared package first
 COPY shared /shared
-RUN pip install /shared
+RUN uv pip install --system /shared
 
 # Copy service files
 COPY services/TTSService/main.py ./

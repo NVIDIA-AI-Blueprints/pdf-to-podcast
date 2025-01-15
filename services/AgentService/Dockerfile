@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir -p /app/config
 
 # Install Python dependencies
-RUN pip install fastapi uvicorn pydantic python-dotenv jinja2 redis minio opentelemetry-api \
+RUN pip install uv
+RUN uv pip install --system fastapi uvicorn pydantic python-dotenv jinja2 redis minio opentelemetry-api \
     opentelemetry-sdk \
     opentelemetry-instrumentation-fastapi \
     opentelemetry-instrumentation-requests \
@@ -24,7 +25,7 @@ RUN pip install fastapi uvicorn pydantic python-dotenv jinja2 redis minio opente
 WORKDIR /app
 
 COPY shared /shared
-RUN pip install /shared
+RUN uv pip install --system /shared
 
 # Copy service files
 COPY services/AgentService/main.py ./

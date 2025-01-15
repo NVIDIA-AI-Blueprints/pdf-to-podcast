@@ -30,6 +30,7 @@ services:
     build:
       context: .
       dockerfile: services/APIService/Dockerfile
+      network: host
     ports:
       - "8002:8002"
     environment:
@@ -50,6 +51,7 @@ services:
     build:
       context: .
       dockerfile: services/AgentService/Dockerfile
+      network: host
     ports:
       - "8964:8964"
     environment:
@@ -67,6 +69,7 @@ services:
     build:
       context: .
       dockerfile: services/PDFService/Dockerfile
+      network: host
     ports:
       - "8003:8003"
     environment:
@@ -83,6 +86,7 @@ services:
     build:
       context: .
       dockerfile: services/TTSService/Dockerfile
+      network: host
     ports:
       - "8889:8889"
     environment:
@@ -114,6 +118,7 @@ services:
     build:
       context: services/PDFService/PDFModelService
       dockerfile: Dockerfile.api
+      network: host
     ports:
       - "8004:8004"
     environment:
@@ -135,6 +140,7 @@ services:
     build:
       context: services/PDFService/PDFModelService
       dockerfile: Dockerfile.worker
+      network: host
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0

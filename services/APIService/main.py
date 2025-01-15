@@ -303,38 +303,39 @@ def process_pdf_task(
                                     f"Stored agent result for {job_id} in minio, size: {len(json.dumps(agent_result).encode())} bytes"
                                 )
 
-                                requests.post(
-                                    f"{TTS_SERVICE_URL}/generate_tts",
-                                    json={
-                                        "dialogue": agent_result["dialogue"],
-                                        "job_id": job_id,
-                                        "voice_mapping": transcription_params.voice_mapping,  # Forward the voice mapping
-                                    },
-                                )
+                                # requests.post(
+                                #     f"{TTS_SERVICE_URL}/generate_tts",
+                                #     json={
+                                #         "dialogue": agent_result["dialogue"],
+                                #         "job_id": job_id,
+                                #         "voice_mapping": transcription_params.voice_mapping,  # Forward the voice mapping
+                                #     },
+                                # )
                                 current_service = ServiceType.TTS
 
                             elif current_service == ServiceType.TTS:
                                 # Get final output and store it
                                 logger.info(
-                                    f"TTS completed for {job_id}, fetching and storing result"
+                                    f"TTS skipped for {job_id}, not fetching and storing result"
                                 )
-                                audio_content = requests.get(
-                                    f"{TTS_SERVICE_URL}/output/{job_id}"
-                                ).content
+                                # audio_content = requests.get(
+                                #     f"{TTS_SERVICE_URL}/output/{job_id}"
+                                # ).content
 
-                                # Store in DB
-                                storage_manager.store_audio(
-                                    transcription_params.userId,
-                                    job_id,
-                                    audio_content,
-                                    f"{job_id}.mp3",
-                                    transcription_params,
-                                )
+                                # # Store in DB
+                                # storage_manager.store_audio(
+                                #     transcription_params.userId,
+                                #     job_id,
+                                #     audio_content,
+                                #     f"{job_id}.mp3",
+                                #     transcription_params,
+                                # )
 
-                                logger.info(
-                                    f"Stored TTS result for {job_id}, size: {len(audio_content)} bytes, with TTL: {MP3_CACHE_TTL} seconds"
-                                )
-                                return audio_content
+                                # logger.info(
+                                #     f"Stored TTS result for {job_id}, size: {len(audio_content)} bytes, with TTL: {MP3_CACHE_TTL} seconds"
+                                # )
+                                #return audio_content
+                                return None
 
                 time.sleep(0.01)
 

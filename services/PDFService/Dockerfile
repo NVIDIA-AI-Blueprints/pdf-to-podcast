@@ -3,7 +3,8 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install only the necessary Python packages
-RUN pip install --no-cache-dir \
+RUN pip install uv 
+RUN uv pip install --system \
     fastapi \
     uvicorn \
     python-multipart \
@@ -23,7 +24,7 @@ RUN pip install --no-cache-dir \
 
 # Copy shared package
 COPY shared /shared
-RUN pip install /shared
+RUN uv pip install --system /shared
 
 # Copy the service code
 COPY services/PDFService/main.py ./

@@ -10,14 +10,11 @@ if ! command -v uv &> /dev/null; then
     source $HOME/.local/bin/env
 fi
 
-# Create a new virtual environment
-uv venv
+# Create uv project in current dir
+uv init 
 
-# Activate the virtual environment
-source .venv/bin/activate
-
-# Install dependencies using uv pip
-uv pip install -r requirements.txt
+# Add dependencies
+uv add -r requirements.txt
 
 # Install shared package in editable mode
 uv pip install -e shared/

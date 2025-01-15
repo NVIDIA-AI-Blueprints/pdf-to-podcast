@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python packages
-RUN pip install --no-cache-dir \
+RUN pip install uv
+RUN uv pip install --system \
     fastapi \
     uvicorn[standard] \
     python-multipart \
@@ -31,7 +32,7 @@ RUN pip install --no-cache-dir \
 
 # Copy shared package first
 COPY shared /shared
-RUN pip install /shared
+RUN uv pip install --system /shared
 
 # Copy service files
 COPY services/APIService/main.py ./

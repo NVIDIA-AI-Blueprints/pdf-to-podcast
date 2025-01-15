@@ -13,7 +13,8 @@ WORKDIR /app
 
 # Install Python dependencies - only API requirements
 COPY requirements.api.txt /app/
-RUN pip install -r requirements.api.txt
+RUN pip install uv
+RUN uv pip install --system -r requirements.api.txt
 
 # Copy application files
 COPY main.py /app/

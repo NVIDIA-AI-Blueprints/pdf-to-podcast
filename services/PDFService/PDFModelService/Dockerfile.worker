@@ -16,7 +16,8 @@ WORKDIR /app
 
 # Install Python dependencies - worker requirements with ML dependencies
 COPY requirements.worker.txt /app/
-RUN pip install -r requirements.worker.txt
+RUN pip install uv
+RUN uv pip install --system -r requirements.worker.txt
 
 # Download required models
 RUN echo 'from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models\nload_pretrained_nlp_models(verbose=True)' > download_models.py
