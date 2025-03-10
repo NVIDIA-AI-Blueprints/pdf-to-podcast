@@ -13,3 +13,4 @@ ruff
 ujson
 jupyterlab>3.0
 gradio==4.43.0
+netapp-ontap==9.11.1
