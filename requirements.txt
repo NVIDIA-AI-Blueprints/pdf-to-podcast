@@ -13,3 +13,9 @@ ruff
 ujson
 jupyterlab>3.0
 gradio==4.43.0
+cupy-cuda112
+torch
+cudnn
+torchvision
+torchtext
+docling
