@@ -81,6 +81,15 @@ all-services: check_env create-minio-data-dir
 clean:
 	docker compose -f docker-compose.yaml down -v
 
+# Approve a pull request manually
+approve-pr:
+	@read -p "Enter the PR number to approve: " PR_NUMBER; \
+	if [ -z "$$PR_NUMBER" ]; then \
+		echo "$(RED)Error: PR number is required$(NC)"; \
+		exit 1; \
+	fi; \
+	gh pr review $$PR_NUMBER --approve
+
 lint:
 	ruff check
 
@@ -89,4 +98,4 @@ format:
 
 ruff: lint format
 
-.PHONY: check_env dev clean ruff prod version-bump version-bump-major uv model-prod model-dev all-services create-minio-data-dir
+.PHONY: check_env dev clean ruff prod version-bump version-bump-major uv model-prod model-dev all-services create-minio-data-dir approve-pr

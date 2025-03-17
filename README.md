@@ -199,3 +199,17 @@ We use GitHub Actions for CI/CD. We run the following actions:
    - Implement proper certificate management
    - Configure appropriate security headers
 - Follow other web security best practices
+
+## PR Approval Automation
+
+We have implemented a new PR approval automation using GitHub Actions. This automation will automatically approve pull requests when certain conditions are met.
+
+### Manual PR Approval
+
+In addition to the automated PR approval, you can manually approve pull requests using the `make approve-pr` command. This command uses the `gh` CLI to approve the PR.
+
+To manually approve a PR, run the following command:
+
+```bash
+make approve-pr PR_NUMBER=<pr_number>
+```

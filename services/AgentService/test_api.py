@@ -105,6 +105,29 @@ def test_transcribe_api():
     assert False, f"Job did not complete within {MAX_WAIT_TIME} seconds"
 
 
+def test_approve_pr():
+    """
+    Test the manual PR approval functionality.
+    
+    This test function:
+    1. Sets up a mock PR number
+    2. Runs the `make approve-pr` command with the mock PR number
+    3. Verifies the command executes successfully
+    
+    Raises:
+        AssertionError: If the command execution fails
+    """
+    # Mock PR number
+    pr_number = "123"
+
+    # Run the `make approve-pr` command
+    result = os.system(f"make approve-pr PR_NUMBER={pr_number}")
+
+    # Check if the command executed successfully
+    assert result == 0, f"Expected command to execute successfully, but got {result}"
+
+
 if __name__ == "__main__":
     test_transcribe_api()
+    test_approve_pr()
     print("All tests passed!")
