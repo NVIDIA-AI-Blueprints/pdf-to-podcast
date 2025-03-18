@@ -4,5 +4,6 @@
     ],
     "githubPullRequests.ignoredPullRequestBranches": [
         "main"
-    ]
+    ],
+    "DockerRun.DisableAutoGenerateConfig": true
 }
