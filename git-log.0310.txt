@@ -1,0 +1,36 @@
+* 26b7d93 (HEAD -> main) [NAS-238] PDF-to-Podcast. [TODO] switch context to NIMS
+* 02d9d02 (remote, new) [NAS-253] tracking snapshots
+* a826460 (pdf-to-podcast/main, pdf-to-podcast/HEAD) notebook api catalog update
+* d49dcec nit
+* 0b2105f Update README.md
+* b02e218 Adds compatibility with NVIDIA AI Workbench (#6)
+* 3bded61 (tag: 1.0.0) api key section
+* 256722d nits
+* 65a3227 arch diagram
+* 7095b55 nb update
+* dd4d9be notebook updates
+* b0c7126 typo in readme
+* 8666a10 readme update (#5)
+* a9a0766 dglogo/code documentation (#4)
+* 59d1232 improve test.py (#3)
+* 1f1c5ef small fixes (#2)
+* 7cddf12 launchable fixes (#1)
+* 9f1f71b Update README.md
+* 2a8555f Update README.md
+* a0159be Update README.md
+* 998183e Update README.md
+* 1b42a38 Update README.md
+* f134ef9 Update README.md
+* 2502609 Update README.md
+* d07ec4d vulnerability fixes
+* 8cda579 readme updates
+* c2681bb (pdf-to-podcast/dglogo/3rd-party-license) 3rd party
+* e70a083 license 3rd party
+* bcf32ac license update
+* 4ade986 license
+* a59ba86 vercel
+* 2e914dd updated ntbk
+* 8b8827e chore: update deployment configs and remove production-specific code
+* d388284 chore(launchable): update git clone URL and directory paths
+* 3553814 updated readme, deleted compose
+* e50d21b Add all local files to repoB

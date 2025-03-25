@@ -1,3 +1,9 @@
 {
-    "python.analysis.extraPaths": ["./shared"]
+    "python.analysis.extraPaths": [
+        "./shared"
+    ],
+    "githubPullRequests.ignoredPullRequestBranches": [
+        "main"
+    ],
+    "DockerRun.DisableAutoGenerateConfig": true
 }

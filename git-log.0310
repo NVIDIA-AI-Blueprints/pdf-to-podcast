@@ -1,0 +1,36 @@
+* [33m26b7d93[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m [NAS-238] PDF-to-Podcast. [TODO] switch context to NIMS
+* [33m02d9d02[m[33m ([m[1;32mremote[m[33m, [m[1;32mnew[m[33m)[m [NAS-253] tracking snapshots
+* [33ma826460[m[33m ([m[1;31mpdf-to-podcast/main[m[33m, [m[1;31mpdf-to-podcast/HEAD[m[33m)[m notebook api catalog update
+* [33md49dcec[m nit
+* [33m0b2105f[m Update README.md
+* [33mb02e218[m Adds compatibility with NVIDIA AI Workbench (#6)
+* [33m3bded61[m[33m ([m[1;33mtag: [m[1;33m1.0.0[m[33m)[m api key section
+* [33m256722d[m nits
+* [33m65a3227[m arch diagram
+* [33m7095b55[m nb update
+* [33mdd4d9be[m notebook updates
+* [33mb0c7126[m typo in readme
+* [33m8666a10[m readme update (#5)
+* [33ma9a0766[m dglogo/code documentation (#4)
+* [33m59d1232[m improve test.py (#3)
+* [33m1f1c5ef[m small fixes (#2)
+* [33m7cddf12[m launchable fixes (#1)
+* [33m9f1f71b[m Update README.md
+* [33m2a8555f[m Update README.md
+* [33ma0159be[m Update README.md
+* [33m998183e[m Update README.md
+* [33m1b42a38[m Update README.md
+* [33mf134ef9[m Update README.md
+* [33m2502609[m Update README.md
+* [33md07ec4d[m vulnerability fixes
+* [33m8cda579[m readme updates
+* [33mc2681bb[m[33m ([m[1;31mpdf-to-podcast/dglogo/3rd-party-license[m[33m)[m 3rd party
+* [33me70a083[m license 3rd party
+* [33mbcf32ac[m license update
+* [33m4ade986[m license
+* [33ma59ba86[m vercel
+* [33m2e914dd[m updated ntbk
+* [33m8b8827e[m chore: update deployment configs and remove production-specific code
+* [33md388284[m chore(launchable): update git clone URL and directory paths
+* [33m3553814[m updated readme, deleted compose
+* [33me50d21b[m Add all local files to repoB
