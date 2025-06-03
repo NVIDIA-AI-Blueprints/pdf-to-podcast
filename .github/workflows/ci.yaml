@@ -1,0 +1,83 @@
+name: Jupyter Notebook Runner
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-notebook:
+    runs-on: arc-runner-set-oke-org-nv-ai-bp
+    env:
+      NOTEBOOK_PATH: ./launchable/PDFtoPodcast.ipynb
+      PYTHON_VERSION: 3.12
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            **/*.ipynb
+
+      - name: Install uv
+        run: |
+          # Check if uv is installed, if not, install it
+          if ! command -v uv &> /dev/null; then
+            echo "Installing uv..."
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+          fi
+
+          # Add ~/.local/bin to PATH to make `uv` accessible
+          echo "PATH=$PATH:$HOME/.local/bin" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install papermill jupyter
+          # Install Docker and Docker Compose in a single step
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sudo sh get-docker.sh
+          sudo apt-get update
+          sudo apt-get install -y docker-compose-plugin docker-compose build-essential
+
+      - name: Run Jupyter Notebook
+        env:
+          ${{ secrets }}
+        run: |
+          # Verify required environment variables
+          required_vars=("ELEVENLABS_API_KEY" "NVIDIA_API_KEY")
+          for var in "${required_vars[@]}"; do
+            if [ -z "${!var}" ]; then
+              echo "Error: $var is not set"
+              exit 1
+            fi
+          done
+
+          OUTPUT_NOTEBOOK="result.ipynb"
+          echo "Executing notebook: $NOTEBOOK_PATH"
+          papermill "$NOTEBOOK_PATH" "$OUTPUT_NOTEBOOK" --log-output --log-level DEBUG
+
+      - name: Convert result to html format
+        if: always()
+        run: |
+          OUTPUT_NOTEBOOK="result.ipynb"
+          jupyter nbconvert --to html "$OUTPUT_NOTEBOOK"
+
+      - name: Upload the result notebook as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-notebook
+          path: "result.html"
+          retention-days: 30
+
