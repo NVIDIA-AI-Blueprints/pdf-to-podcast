@@ -11,96 +11,96 @@ from typing import Dict
 
 # Template for summarizing individual PDF documents
 MONOLOGUE_SUMMARY_PROMPT_STR = """
-You are a knowledgeable analyst. Please provide a targeted analysis of the following document, focusing on: {{ focus }}
+Eres un analista conocedor. Por favor proporciona un análisis dirigido del siguiente documento, enfocándote en: {{ focus }}
 
 <document>
 {{text}}
 </document>
 
-Requirements for the analysis:
-1. Essential Information:
-  - Key metrics and data points
-  - Important trends
-  - Notable patterns
-  - Future projections
-  - Strategic insights
+Requisitos para el análisis:
+1. Información Esencial:
+  - Métricas clave y puntos de datos
+  - Tendencias importantes
+  - Patrones notables
+  - Proyecciones futuras
+  - Perspectivas estratégicas
 
-2. Document Context:
-  - Document type and purpose
-  - Relevant entities
-  - Time period covered
-  - Key stakeholders
+2. Contexto del Documento:
+  - Tipo y propósito del documento
+  - Entidades relevantes
+  - Período de tiempo cubierto
+  - Actores clave
 
-3. Data Accuracy:
-  - Preserve exact numerical values
-  - Maintain specific dates
-  - Keep precise terminology
-  - Include verbatim important disclosures when relevant
+3. Precisión de Datos:
+  - Preserva valores numéricos exactos
+  - Mantén fechas específicas
+  - Conserva terminología precisa
+  - Incluye revelaciones importantes textualmente cuando sea relevante
 
-4. Text Conversion Requirements:
-  - Write all numbers in word form (e.g., "one billion" not "1B")
-  - Express currency as "[amount] [unit]" (e.g., "fifty million dollars")
-  - Write percentages in spoken form (e.g., "twenty five percent")
-  - Spell out mathematical operations (e.g., "increased by" not "+")
-  - Use proper Unicode characters
+4. Requisitos de Conversión de Texto:
+  - Escribe todos los números en forma de palabra (ej., "mil millones" no "1B")
+  - Expresa moneda como "[cantidad] [unidad]" (ej., "cincuenta millones de dólares")
+  - Escribe porcentajes en forma hablada (ej., "veinticinco por ciento")
+  - Deletrea operaciones matemáticas (ej., "aumentó en" no "+")
+  - Usa caracteres Unicode apropiados
 
-Format the analysis using markdown with clear headers and bullet points. Be focused and specific, 
-Condense the information into metrics easily digestible on a audiobook format without making it stat/number heavy, focus more on the company's growth areas and trends.
-You are presenting to the board of directors. Speak in a way that is engaging and informative, but not too technical and speak in the first person.
+Formatea el análisis usando markdown con encabezados claros y viñetas. Sé enfocado y específico,
+Condensa la información en métricas fácilmente digeribles en formato de audiolibro sin hacerlo pesado en estadísticas/números, enfócate más en las áreas de crecimiento y tendencias de la empresa.
+Estás presentando a la junta directiva. Habla de una manera que sea atractiva e informativa, pero no demasiado técnica y habla en primera persona.
 """
 
 # Template for synthesizing multiple document summaries into an outline
 MONOLOGUE_MULTI_DOC_SYNTHESIS_PROMPT_STR = """
-Create a structured monologue outline synthesizing the following document summaries. The monologue should be 30-45 seconds long.
+Crea un esquema de monólogo estructurado sintetizando los siguientes resúmenes de documentos. El monólogo debe durar 30-45 segundos.
 
-Focus Areas & Key Topics:
+Áreas de Enfoque y Temas Clave:
 {% if focus_instructions %}
 {{focus_instructions}}
 {% else %}
-Use your judgment to identify and prioritize the most important themes, metrics, and insights across all documents.
+Usa tu juicio para identificar y priorizar los temas, métricas y perspectivas más importantes en todos los documentos.
 {% endif %}
 
-Available Source Documents:
+Documentos Fuente Disponibles:
 {{documents}}
 
-Requirements:
-1. Content Strategy
-   - Focus on the content in Target Documents, and use Context Documents as support
-   - Identify key metrics and trends
-   - Analyze potential implications
-   - Draw connections between documents and focus areas
+Requisitos:
+1. Estrategia de Contenido
+   - Enfócate en el contenido de los Documentos Objetivo, y usa los Documentos de Contexto como apoyo
+   - Identifica métricas clave y tendencias
+   - Analiza implicaciones potenciales
+   - Establece conexiones entre documentos y áreas de enfoque
 
-2. Structure Requirements
-   - Create a clear narrative flow
-   - Balance depth vs breadth of coverage
-   - Ensure logical topic transitions
-   - Maintain financial accuracy and precision
+2. Requisitos de Estructura
+   - Crea un flujo narrativo claro
+   - Equilibra profundidad vs amplitud de cobertura
+   - Asegura transiciones lógicas de temas
+   - Mantén precisión y exactitud financiera
 
-3. Time Management
-   - Allocate time based on topic importance
-   - Allow for natural pacing and emphasis
-   - Include brief pauses for key points
-   - Stay within total duration
+3. Gestión del Tiempo
+   - Asigna tiempo basado en importancia del tema
+   - Permite ritmo natural y énfasis
+   - Incluye pausas breves para puntos clave
+   - Mantente dentro de la duración total
 
-4. Text Formatting Requirements:
-   - Write numbers in word form
-   - Format currency as "[amount] [unit]"
-   - Express percentages in spoken form
-   - Write out mathematical operations
+4. Requisitos de Formato de Texto:
+   - Escribe números en forma de palabra
+   - Formatea moneda como "[cantidad] [unidad]"
+   - Expresa porcentajes en forma hablada
+   - Escribe operaciones matemáticas
 
-Output a structured outline that synthesizes insights across all documents, emphasizing Target Documents while using Context Documents for support."""
+Produce un esquema estructurado que sintetice perspectivas a través de todos los documentos, enfatizando Documentos Objetivo mientras usa Documentos de Contexto para apoyo."""
 
 # Template for generating the actual monologue transcript
 MONOLOGUE_TRANSCRIPT_PROMPT_STR = """
-Create a focused update based on this outline and source documents.
+Crea una actualización enfocada basada en este esquema y documentos fuente.
 
-Outline:
+Esquema:
 {{ raw_outline }}
 
-Available Source Documents:
+Documentos Fuente Disponibles:
 {% for doc in documents %}
 <document>
-<type>{"Target Document" if doc.type == "target" else "Context Document"}</type>
+<type>{"Documento Objetivo" if doc.type == "target" else "Documento de Contexto"}</type>
 <path>{{doc.filename}}</path>
 <summary>
 {{doc.summary}}
@@ -108,69 +108,69 @@ Available Source Documents:
 </document>
 {% endfor %}
 
-Focus Areas: {{ focus }}
+Áreas de Enfoque: {{ focus }}
 
-Parameters:
-- Duration: 30 seconds (~90 words)
-- Speaker: {{ speaker_1_name }}
-- Structure: Follow the outline while maintaining:
-  * Opening (5-7 words)
-  * Key points from outline (60-70 words)
-  * Supporting evidence (15-20 words)
-  * Conclusion (10-15 words)
+Parámetros:
+- Duración: 30 segundos (~90 palabras)
+- Locutor: {{ speaker_1_name }}
+- Estructura: Sigue el esquema mientras mantienes:
+  * Apertura (5-7 palabras)
+  * Puntos clave del esquema (60-70 palabras)
+  * Evidencia de apoyo (15-20 palabras)
+  * Conclusión (10-15 palabras)
 
-Requirements:
-1. Speech Pattern
-   - Use broadcast-style delivery
-   - Natural pauses and emphasis
-   - Professional but conversational tone
-   - Clear source attribution
+Requisitos:
+1. Patrón de Habla
+   - Usa entrega estilo transmisión
+   - Pausas naturales y énfasis
+   - Tono profesional pero conversacional
+   - Atribución clara de fuentes
 
-2. Content Structure
-   - Prioritize insights from Target Documents
-   - Support with Context Documents where relevant
-   - Maintain logical flow between points
-   - End with a clear takeaway
+2. Estructura de Contenido
+   - Prioriza insights de Documentos Objetivo
+   - Apoya con Documentos de Contexto donde sea relevante
+   - Mantén flujo lógico entre puntos
+   - Termina con una conclusión clara
 
-3. Text Formatting:
-   - All numbers in word form
-   - Currency as "[amount] [unit]"
-   - Percentages in spoken form
-   - Mathematical operations written out
+3. Formato de Texto:
+   - Todos los números en forma de palabra
+   - Moneda como "[cantidad] [unidad]"
+   - Porcentajes en forma hablada
+   - Operaciones matemáticas escritas
 
-Create a concise, engaging monologue that follows the outline while delivering essential financial information."""
+Crea un monólogo conciso y atractivo que siga el esquema mientras entrega información financiera esencial."""
 
 # Template for converting monologue to structured dialogue format
-MONOLOGUE_DIALOGUE_PROMPT_STR = """You are tasked with converting a financial monologue into a structured JSON format. You have:
+MONOLOGUE_DIALOGUE_PROMPT_STR = """Se te ha asignado convertir un monólogo financiero en un formato JSON estructurado. Tienes:
 
-1. Speaker information:
-   - Speaker: {{ speaker_1_name }} (mapped to "speaker-1")
+1. Información del hablante:
+   - Hablante: {{ speaker_1_name }} (mapeado a "speaker-1")
 
-2. The original monologue:
+2. El monólogo original:
 {{ text }}
 
-3. Required output schema:
+3. Esquema de salida requerido:
 {{ schema }}
 
-Your task is to:
-- Convert the monologue exactly into the specified JSON format 
-- Preserve all content without any omissions
-- Map all content to "speaker-1"
-- Maintain all financial data accuracy
+Tu tarea es:
+- Convertir el monólogo exactamente al formato JSON especificado
+- Preservar todo el contenido sin omisiones
+- Mapear todo el contenido a "speaker-1"
+- Mantener toda la precisión de datos financieros
 
-You absolutely must, without exception:
-- Use proper Unicode characters directly (e.g., use ' instead of \\u2019)
-- Ensure all apostrophes, quotes, and special characters are properly formatted
-- Do not escape Unicode characters in the output
+Debes absolutamente, sin excepción:
+- Usar caracteres Unicode apropiados directamente (ej., usar ' en lugar de \\u2019)
+- Asegurar que todas las apostrofes, comillas y caracteres especiales estén formateados apropiadamente
+- No escapar caracteres Unicode en la salida
 
-You absolutely must, without exception:
-- Convert all numbers and symbols to spoken form:
-  * Numbers should be spelled out (e.g., "one billion" instead of "1B")
-  * Currency should be expressed as "[amount] [unit of currency]" (e.g., "fifty million dollars" instead of "$50M")
-  * Mathematical symbols should be spoken (e.g., "increased by" instead of "+")
-  * Percentages should be spoken as "percent" (e.g., "twenty five percent" instead of "25%")
+Debes absolutamente, sin excepción:
+- Convertir todos los números y símbolos a forma hablada:
+  * Los números deben escribirse con palabras (ej., "mil millones" en lugar de "1B")
+  * La moneda debe expresarse como "[cantidad] [unidad de moneda]" (ej., "cincuenta millones de dólares" en lugar de "$50M")
+  * Los símbolos matemáticos deben hablarse (ej., "aumentó en" en lugar de "+")
+  * Los porcentajes deben hablarse como "por ciento" (ej., "veinticinco por ciento" en lugar de "25%")
 
-Please output the JSON following the provided schema, maintaining all financial details and proper formatting. The output should use proper Unicode characters directly, not escaped sequences. Do not output anything besides the JSON."""
+Por favor, produce el JSON siguiendo el esquema proporcionado, manteniendo todos los detalles financieros y formato apropiado. La salida debe usar caracteres Unicode apropiados directamente, no secuencias escapadas. No produzcas nada más que el JSON."""
 
 # Dictionary mapping template names to their content
 PROMPT_TEMPLATES = {
