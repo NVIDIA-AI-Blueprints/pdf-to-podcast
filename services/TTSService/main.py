@@ -20,9 +20,20 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="ElevenLabs TTS Service", debug=True)
 MAX_CONCURRENT_REQUESTS = int(os.getenv("MAX_CONCURRENT_REQUESTS", "5"))
+
+# Default English voices (fallback)
 DEFAULT_VOICE_1 = os.getenv("DEFAULT_VOICE_1", "iP95p4xoKVk53GoZ742B")
 DEFAULT_VOICE_2 = os.getenv("DEFAULT_VOICE_2", "9BWtsMINqrJLrRacOk9x")
-DEFAULT_VOICE_MAPPING = {"speaker-1": DEFAULT_VOICE_1, "speaker-2": DEFAULT_VOICE_2}
+
+# Spanish voices (primary for Spanish content)
+DEFAULT_SPANISH_VOICE_1 = os.getenv("DEFAULT_SPANISH_VOICE_1", DEFAULT_VOICE_1)
+DEFAULT_SPANISH_VOICE_2 = os.getenv("DEFAULT_SPANISH_VOICE_2", DEFAULT_VOICE_2)
+
+# Use Spanish voices as the default mapping for Spanish podcast generation
+DEFAULT_VOICE_MAPPING = {
+    "speaker-1": DEFAULT_SPANISH_VOICE_1, 
+    "speaker-2": DEFAULT_SPANISH_VOICE_2
+}
 
 telemetry = OpenTelemetryInstrumentation()
 config = OpenTelemetryConfig(
@@ -47,8 +58,8 @@ class TTSRequest(BaseModel):
     job_id: str
     scratchpad: Optional[str] = ""
     voice_mapping: Optional[Dict[str, str]] = {
-        "speaker-1": DEFAULT_VOICE_1,
-        "speaker-2": DEFAULT_VOICE_2,
+        "speaker-1": DEFAULT_SPANISH_VOICE_1,
+        "speaker-2": DEFAULT_SPANISH_VOICE_2,
     }
 
 
@@ -121,11 +132,11 @@ class TTSService:
                 if invalid_voices:
                     span.set_attribute("invalid_voices", invalid_voices)
                     logger.warning(
-                        f"Using default voices. Invalid voice IDs: {invalid_voices}"
+                        f"Using default Spanish voices. Invalid voice IDs: {invalid_voices}"
                     )
                     voice_mapping = {
-                        "speaker-1": DEFAULT_VOICE_1,
-                        "speaker-2": DEFAULT_VOICE_2,
+                        "speaker-1": DEFAULT_SPANISH_VOICE_1,
+                        "speaker-2": DEFAULT_SPANISH_VOICE_2,
                     }
 
                 job_manager.update_status(
@@ -253,7 +264,6 @@ async def cleanup_jobs():
     """Clean up old jobs"""
     removed = job_manager.cleanup_old_jobs()
     return {"message": f"Removed {removed} old jobs"}
-
 
 @app.get("/health")
 async def health():
