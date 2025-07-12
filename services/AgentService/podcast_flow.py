@@ -78,7 +78,7 @@ async def podcast_summarize_pdfs(
     job status throughout the process.
     """
     job_manager.update_status(
-        job_id, JobStatus.PROCESSING, f"Summarizing {len(pdfs)} PDFs"
+        job_id, JobStatus.PROCESSING, f"Resumiendo {len(pdfs)} PDFs"
     )
 
     summaries: List[AIMessage] = await asyncio.gather(
@@ -122,7 +122,7 @@ async def podcast_generate_raw_outline(
     """
     # Prepare document summaries in XML format
     job_manager.update_status(
-        job_id, JobStatus.PROCESSING, "Generating initial outline"
+        job_id, JobStatus.PROCESSING, "Generando esquema inicial"
     )
     documents = []
     for pdf in summarized_pdfs:
@@ -324,7 +324,7 @@ async def podcast_process_segments(
         job_manager.update_status(
             job_id,
             JobStatus.PROCESSING,
-            f"Processing segment {idx + 1}/{len(outline.segments)}: {segment.section}",
+            f"Procesando segmento {idx + 1}/{len(outline.segments)}: {segment.section}",
         )
 
         task = podcast_process_segment(
@@ -433,7 +433,7 @@ async def podcast_generate_dialogue(
 
     Creates tasks for generating dialogue for each segment and executes them in parallel.
     """
-    job_manager.update_status(job_id, JobStatus.PROCESSING, "Generating dialogue")
+    job_manager.update_status(job_id, JobStatus.PROCESSING, "Generando diálogo")
 
     # Create tasks for generating dialogue for each segment
     dialogue_tasks = []
@@ -453,7 +453,7 @@ async def podcast_generate_dialogue(
         job_manager.update_status(
             job_id,
             JobStatus.PROCESSING,
-            f"Converting segment {idx + 1}/{len(outline.segments)} to dialogue",
+            f"Convirtiendo segmento {idx + 1}/{len(outline.segments)} a diálogo",
         )
 
         task = podcast_generate_dialogue_segment(
@@ -499,7 +499,7 @@ async def podcast_combine_dialogues(
     Iteratively combines dialogue segments, ensuring smooth transitions between sections.
     """
     job_manager.update_status(
-        job_id, JobStatus.PROCESSING, "Combining dialogue segments"
+        job_id, JobStatus.PROCESSING, "Combinando segmentos de diálogo"
     )
 
     # Start with the first segment's dialogue
@@ -514,7 +514,7 @@ async def podcast_combine_dialogues(
         job_manager.update_status(
             job_id,
             JobStatus.PROCESSING,
-            f"Combining segment {idx + 1}/{len(segment_dialogues)} with existing dialogue",
+            f"Combinando segmento {idx + 1}/{len(segment_dialogues)} con diálogo existente",
         )
 
         next_section = segment_dialogues[idx]["dialogue"]
@@ -575,7 +575,7 @@ async def podcast_create_final_conversation(
     attribution and timing information.
     """
     job_manager.update_status(
-        job_id, JobStatus.PROCESSING, "Formatting final conversation"
+        job_id, JobStatus.PROCESSING, "Formateando conversación final"
     )
 
     schema = Conversation.model_json_schema()

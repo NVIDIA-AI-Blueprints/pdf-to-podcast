@@ -78,7 +78,7 @@ async def monologue_summarize_pdfs(
     job status throughout the process.
     """
     job_manager.update_status(
-        job_id, JobStatus.PROCESSING, f"Summarizing {len(pdfs)} PDFs"
+        job_id, JobStatus.PROCESSING, f"Resumiendo {len(pdfs)} PDFs"
     )
 
     summaries: List[AIMessage] = await asyncio.gather(
@@ -119,7 +119,7 @@ async def monologue_generate_raw_outline(
     outline for the monologue.
     """
     job_manager.update_status(
-        job_id, JobStatus.PROCESSING, "Generating initial outline"
+        job_id, JobStatus.PROCESSING, "Generando esquema inicial"
     )
 
     # Format documents as a string list for consistency with podcast flow
@@ -175,7 +175,7 @@ async def monologue_generate_monologue(
     the speaker's name and any focus areas specified in the request.
     """
     job_manager.update_status(
-        job_id, JobStatus.PROCESSING, "Creating monologue transcript"
+        job_id, JobStatus.PROCESSING, "Creando transcripción de monólogo"
     )
 
     template = FinancialSummaryPrompts.get_template("monologue_transcript_prompt")
@@ -230,7 +230,7 @@ async def monologue_create_final_conversation(
     schema, handling proper text escaping and validation.
     """
     job_manager.update_status(
-        job_id, JobStatus.PROCESSING, "Formatting final conversation"
+        job_id, JobStatus.PROCESSING, "Formateando conversación final"
     )
 
     schema = Conversation.model_json_schema()

@@ -92,7 +92,7 @@ async def process_transcription(job_id: str, request: TranscriptionRequest):
 
             # Initialize processing
             job_manager.update_status(
-                job_id, JobStatus.PROCESSING, "Initializing processing"
+                job_id, JobStatus.PROCESSING, "Inicializando procesamiento"
             )
 
             if request.monologue:
@@ -136,7 +136,7 @@ async def process_transcription(job_id: str, request: TranscriptionRequest):
                     job_id, final_conversation.model_dump_json().encode(), ex=120
                 )
                 job_manager.update_status(
-                    job_id, JobStatus.COMPLETED, "Transcription completed successfully"
+                    job_id, JobStatus.COMPLETED, "Transcripción completada exitosamente"
                 )
 
             else:
@@ -223,7 +223,7 @@ async def process_transcription(job_id: str, request: TranscriptionRequest):
                     job_id, final_conversation.model_dump_json().encode(), ex=120
                 )
                 job_manager.update_status(
-                    job_id, JobStatus.COMPLETED, "Transcription completed successfully"
+                    job_id, JobStatus.COMPLETED, "Transcripción completada exitosamente"
                 )
 
         except Exception as e:
