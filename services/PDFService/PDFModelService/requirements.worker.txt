@@ -1,5 +1,6 @@
 celery[redis]
 redis
+numpy<2
 opencv-python==4.8.0.74
 opencv-contrib-python==4.8.0.74
 torch
