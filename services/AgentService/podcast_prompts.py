@@ -106,9 +106,6 @@ Output Requirements:
    - References should only appear in the segment's "references" array, not as a topic
    - Duration represents the length of each segment, not its starting timestamp
    - Each segment's duration should be a positive number
-
-The result must conform to the following JSON schema:
-{{ schema }}
 """
 
 # Template for generating transcript with source references
@@ -282,9 +279,6 @@ PODCAST_DIALOGUE_PROMPT_STR = """You are tasked with converting a podcast transc
 2. The original transcript:
 {{ text }}
 
-3. Required output schema:
-{{ schema }}
-
 Your task is to:
 - Convert the transcript exactly into the specified JSON format 
 - Preserve all dialogue content without any omissions
@@ -303,7 +297,7 @@ You absolutely must, without exception:
   * Mathematical symbols should be spoken (e.g., "equals" instead of "=", "plus" instead of "+")
   * Percentages should be spoken as "percent" (e.g., "fifty percent" instead of "50%")
 
-Please output the JSON following the provided schema, maintaining all conversational details and speaker attributions. The output should use proper Unicode characters directly, not escaped sequences. Do not output anything besides the JSON."""
+Please output the JSON with a "scratchpad" field for working notes and a "dialogue" array containing objects with "speaker" (either "speaker-1" or "speaker-2") and "text" fields. Maintain all conversational details and speaker attributions. The output should use proper Unicode characters directly, not escaped sequences. Do not output anything besides the JSON."""
 
 # Dictionary mapping prompt names to their template strings
 PROMPT_TEMPLATES = {
