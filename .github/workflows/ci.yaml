@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   run-notebook:
-    runs-on: arc-runner-set-oke-org-nv-ai-bp
+    runs-on: arc-runners-org-nvidia-ai-bp-1-gpu
     env:
       NOTEBOOK_PATH: ./launchable/PDFtoPodcast.ipynb
       PYTHON_VERSION: 3.12
@@ -81,3 +81,32 @@ jobs:
           path: "result.html"
           retention-days: 30
 
+      - name: Set result output
+        id: set_result
+        if: always()  
+        run: |
+          echo "RESULT=$(if [ ${{ job.status }} == 'success' ]; then echo 'PASS'; else echo 'FAIL'; fi)" >> $GITHUB_OUTPUT
+   
+      - name: Send mail
+        uses: dawidd6/action-send-mail@6e71c855c9a091d80a519621b9fd3e8d252ca40c
+        if: always()
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          
+          # Email details
+          subject: "QA Test Workflow Result for ${{ github.repository }}"
+          to: Github-Action-Blueprint-QA@nvidia.com
+          from: github-workflow-notification@gmail.com
+          html_body: |
+            <p>Hello,</p>
+            
+            <p>The workflow for repository: <strong>${{ github.repository }}</strong> has completed.<br>
+            <strong>Result:</strong> ${{ steps.set_result.outputs.RESULT }}</p>
+            
+            <p>You can review the details on GitHub:<br>
+            <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}</a></p>
+            
+            <p>Thanks!</p>      
