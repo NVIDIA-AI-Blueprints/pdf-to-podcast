@@ -4,10 +4,27 @@ set -e
 
 # Install uv if not already installed
 if ! command -v uv &> /dev/null; then
+    echo "Installing uv package manager..."
     curl -LsSf https://astral.sh/uv/install.sh | sh
 
     # Add uv to path
-    source $HOME/.local/bin/env
+    # The uv installer creates this env file to add uv to PATH
+    if [ -f "$HOME/.local/bin/env" ]; then
+        source "$HOME/.local/bin/env"
+    elif [ -f "$HOME/.cargo/env" ]; then
+        # Fallback: some versions install to .cargo/env
+        source "$HOME/.cargo/env"
+    else
+        # Manual fallback: add common uv install locations to PATH
+        export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+    fi
+    
+    # Verify uv is now available
+    if ! command -v uv &> /dev/null; then
+        echo "Error: uv installation succeeded but uv is not in PATH."
+        echo "Please add ~/.local/bin to your PATH and try again."
+        exit 1
+    fi
 fi
 
 # Create a new virtual environment
