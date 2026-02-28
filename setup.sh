@@ -5,7 +5,10 @@ set -e
 # Install uv if not already installed
 if ! command -v uv &> /dev/null; then
     echo "Installing uv package manager..."
-    curl -LsSf https://astral.sh/uv/install.sh | sh
+    uv_install_script="$(mktemp)"
+    curl -LsSf https://astral.sh/uv/install.sh -o "$uv_install_script"
+    sh "$uv_install_script"
+    rm -f "$uv_install_script"
 
     # Add uv to path
     # The uv installer creates this env file to add uv to PATH
@@ -22,7 +25,7 @@ if ! command -v uv &> /dev/null; then
     # Verify uv is now available
     if ! command -v uv &> /dev/null; then
         echo "Error: uv installation succeeded but uv is not in PATH."
-        echo "Please add ~/.local/bin to your PATH and try again."
+        echo "Please ensure the directory containing the 'uv' binary is on your PATH (commonly ~/.local/bin or ~/.cargo/bin), then try again."
         exit 1
     fi
 fi

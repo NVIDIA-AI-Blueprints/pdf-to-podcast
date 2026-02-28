@@ -94,9 +94,11 @@ IMPORTANT:  This will be used in the NVIDIA_API_KEY environment variable below.
 
    ```bash
    # Create .env file in the repo root directory
-   echo "ELEVENLABS_API_KEY=your_key" >> .env
-   echo "NVIDIA_API_KEY=your_key" >> .env
-   echo "MAX_CONCURRENT_REQUESTS=1" >> .env
+   cat > .env << 'EOF'
+   ELEVENLABS_API_KEY=your_key
+   NVIDIA_API_KEY=your_key
+   MAX_CONCURRENT_REQUESTS=1
+   EOF
    ```
 
    Or create it manually by adding these lines to a new `.env` file:
@@ -109,7 +111,7 @@ IMPORTANT:  This will be used in the NVIDIA_API_KEY environment variable below.
 > **Note:** The ElevenLabs API key can handle concurrent requests. For local development, set MAX_CONCURRENT_REQUESTS=1 to avoid rate-limiting issues.
 
 <details>
-<summary><strong>Troubleshooting: <code>~/.local/bin/env: No such file or Directory</code></strong></summary>
+<summary><strong>Troubleshooting: <code>~/.local/bin/env: No such file or directory</code></strong></summary>
 
 This error only occurs on **first-time setup** when `uv` hasn't been installed before.
 
