@@ -46,7 +46,7 @@ class Conversation(BaseModel):
         scratchpad (str): Working notes or context for the conversation
         dialogue (List[DialogueEntry]): List of dialogue entries making up the conversation
     """
-    scratchpad: str
+    scratchpad: str = ""
     dialogue: List[DialogueEntry]
 
 
