@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: models-config
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.modelsConfigPVC.size }}
+  {{- if .Values.modelsConfigPVC.storageClass }}
+  storageClassName: {{ .Values.modelsConfigPVC.storageClass }}
+  {{- end }}

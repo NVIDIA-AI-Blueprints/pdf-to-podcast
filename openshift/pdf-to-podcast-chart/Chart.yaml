@@ -1,0 +1,32 @@
+apiVersion: v2
+name: pdf-to-podcast
+description: A Helm chart for deploying PDF-to-Podcast application on OpenShift
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - pdf
+  - podcast
+  - nvidia
+  - llm
+  - tts
+  - openshift
+  - rhoai
+maintainers:
+  - name: Your Team
+    email: your-team@example.com
+
+# Infrastructure dependencies
+# Redis: Standalone deployment using official Redis image (see templates/redis-*.yaml)
+# MinIO: Red Hat AI Quickstart chart (uses official MinIO image)
+# Jaeger: Official Jaeger chart for distributed tracing
+# For enterprise production, consider migrating to Operators from OperatorHub.
+dependencies:
+  - name: minio
+    version: "0.5.x"
+    repository: "https://rh-ai-quickstart.github.io/ai-architecture-charts"
+    condition: minio.enabled
+  - name: jaeger
+    version: "3.x.x"
+    repository: "https://jaegertracing.github.io/helm-charts"
+    condition: jaeger.enabled

@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: api-service
+spec:
+  replicas: {{ .Values.apiService.replicas }}
+  selector:
+    matchLabels:
+      app: api-service
+  template:
+    metadata:
+      labels:
+        app: api-service
+    spec:
+      containers:
+      - name: api-service
+        image: "{{ .Values.imageRegistry }}/api-service:{{ .Values.apiService.image.tag }}"
+        imagePullPolicy: {{ include "pdf-to-podcast.imagePullPolicy" . }}
+        ports:
+        - containerPort: 8002
+          name: http
+        env:
+        - name: OTLP_ENDPOINT
+          value: "{{ include "pdf-to-podcast.jaegerOtlpEndpoint" . }}"
+        - name: PDF_SERVICE_URL
+          value: "http://pdf-service:8003"
+        - name: AGENT_SERVICE_URL
+          value: "http://agent-service:8964"
+        - name: TTS_SERVICE_URL
+          value: "http://tts-service:8889"
+        - name: REDIS_URL
+          value: "redis://{{ include "pdf-to-podcast.redisHost" . }}:6379"
+        - name: MINIO_ENDPOINT
+          value: "{{ include "pdf-to-podcast.minioEndpoint" . }}"
+        - name: MINIO_ACCESS_KEY
+          value: "{{ .Values.minio.secret.user }}"
+        - name: MINIO_SECRET_KEY
+          value: "{{ .Values.minio.secret.password }}"
+        resources:
+          {{- toYaml .Values.apiService.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8002
+          initialDelaySeconds: 10
+          periodSeconds: 5

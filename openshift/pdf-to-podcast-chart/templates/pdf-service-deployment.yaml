@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pdf-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: pdf-service
+spec:
+  replicas: {{ .Values.pdfService.replicas }}
+  selector:
+    matchLabels:
+      app: pdf-service
+  template:
+    metadata:
+      labels:
+        app: pdf-service
+    spec:
+      containers:
+      - name: pdf-service
+        image: "{{ .Values.imageRegistry }}/pdf-service:{{ .Values.pdfService.image.tag }}"
+        imagePullPolicy: {{ include "pdf-to-podcast.imagePullPolicy" . }}
+        ports:
+        - containerPort: 8003
+          name: http
+        env:
+        - name: OTLP_ENDPOINT
+          value: "{{ include "pdf-to-podcast.jaegerOtlpEndpoint" . }}"
+        - name: REDIS_URL
+          value: "redis://{{ include "pdf-to-podcast.redisHost" . }}:6379"
+        - name: MODEL_API_URL
+          value: "http://pdf-api:8004"
+        resources:
+          {{- toYaml .Values.pdfService.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8003
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8003
+          initialDelaySeconds: 10
+          periodSeconds: 5

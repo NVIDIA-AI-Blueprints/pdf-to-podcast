@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: frontend
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+        models-config-volume: shared
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: models-config-volume
+                operator: In
+                values:
+                - shared
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - name: frontend
+        image: "{{ .Values.imageRegistry }}/frontend:{{ .Values.frontend.image.tag }}"
+        imagePullPolicy: {{ include "pdf-to-podcast.imagePullPolicy" . }}
+        ports:
+        - containerPort: 7860
+          name: http
+        env:
+        - name: API_SERVICE_URL
+          value: "http://api-service:8002"
+        - name: DEFAULT_VOICE_2
+          value: "pFZP5JQG7iQjIQuC4Bku"
+        # Optional email configuration (if secrets provided)
+        {{- if .Values.emailConfig.enabled }}
+        - name: SENDER_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: email-config
+              key: SENDER_EMAIL
+        - name: SENDER_EMAIL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: email-config
+              key: SENDER_EMAIL_PASSWORD
+        {{- end }}
+        resources:
+          {{- toYaml .Values.frontend.resources | nindent 10 }}
+        livenessProbe:
+          tcpSocket:
+            port: 7860
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 7860
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        volumeMounts:
+        - name: models-storage
+          mountPath: /project
+        - name: demo-output
+          mountPath: /project/frontend/demo_outputs
+      volumes:
+      - name: models-storage
+        persistentVolumeClaim:
+          claimName: models-config
+      - name: demo-output
+        emptyDir: {}

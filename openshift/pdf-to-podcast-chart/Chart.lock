@@ -1,0 +1,9 @@
+dependencies:
+- name: minio
+  repository: https://rh-ai-quickstart.github.io/ai-architecture-charts
+  version: 0.5.5
+- name: jaeger
+  repository: https://jaegertracing.github.io/helm-charts
+  version: 3.4.1
+digest: sha256:2aeacd0b0e6c017b7ba544290d691db99c6f5dfad432d55289665058ece26a24
+generated: "2026-04-05T14:10:41.437761871+03:00"

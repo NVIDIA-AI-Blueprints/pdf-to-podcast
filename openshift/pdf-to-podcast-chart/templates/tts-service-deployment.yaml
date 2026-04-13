@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tts-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: tts-service
+spec:
+  replicas: {{ .Values.ttsService.replicas }}
+  selector:
+    matchLabels:
+      app: tts-service
+  template:
+    metadata:
+      labels:
+        app: tts-service
+    spec:
+      containers:
+      - name: tts-service
+        image: "{{ .Values.imageRegistry }}/tts-service:{{ .Values.ttsService.image.tag }}"
+        imagePullPolicy: {{ include "pdf-to-podcast.imagePullPolicy" . }}
+        ports:
+        - containerPort: 8889
+          name: http
+        env:
+        - name: OTLP_ENDPOINT
+          value: "{{ include "pdf-to-podcast.jaegerOtlpEndpoint" . }}"
+        - name: MAX_CONCURRENT_REQUESTS
+          value: "{{ .Values.maxConcurrentRequests }}"
+        - name: ELEVENLABS_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-keys
+              key: ELEVENLABS_API_KEY
+        - name: DEFAULT_VOICE_2
+          value: "pFZP5JQG7iQjIQuC4Bku"
+        - name: TTS_MODEL_ID
+          value: "eleven_flash_v2"
+        - name: REDIS_URL
+          value: "redis://{{ include "pdf-to-podcast.redisHost" . }}:6379"
+        resources:
+          {{- toYaml .Values.ttsService.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8889
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8889
+          initialDelaySeconds: 10
+          periodSeconds: 5

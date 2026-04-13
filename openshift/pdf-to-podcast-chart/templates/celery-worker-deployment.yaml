@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: celery-worker
+spec:
+  replicas: {{ .Values.celeryWorker.replicas }}
+  selector:
+    matchLabels:
+      app: celery-worker
+  template:
+    metadata:
+      labels:
+        app: celery-worker
+        pdf-temp-volume: shared
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: pdf-temp-volume
+                operator: In
+                values:
+                - shared
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - name: celery-worker
+        image: "{{ .Values.imageRegistry }}/celery-worker:{{ .Values.celeryWorker.image.tag }}"
+        imagePullPolicy: {{ include "pdf-to-podcast.imagePullPolicy" . }}
+        env:
+        - name: CELERY_BROKER_URL
+          value: "redis://{{ include "pdf-to-podcast.redisHost" . }}:6379/0"
+        - name: CELERY_RESULT_BACKEND
+          value: "redis://{{ include "pdf-to-podcast.redisHost" . }}:6379/0"
+        - name: TEMP_FILE_DIR
+          value: "/tmp/pdf_conversions"
+        - name: HF_HOME
+          value: "/tmp/.cache/huggingface"
+        - name: EASYOCR_MODULE_PATH
+          value: "/tmp/.EasyOCR"
+        resources:
+          {{- toYaml .Values.celeryWorker.resources | nindent 10 }}
+          {{- if .Values.celeryWorker.gpu.enabled }}
+          limits:
+            nvidia.com/gpu: {{ .Values.celeryWorker.gpu.count }}
+          requests:
+            nvidia.com/gpu: {{ .Values.celeryWorker.gpu.count }}
+          {{- end }}
+        volumeMounts:
+        - name: pdf-temp
+          mountPath: /tmp/pdf_conversions
+        - name: model-cache
+          mountPath: /tmp/.cache
+        - name: easyocr-cache
+          mountPath: /tmp/.EasyOCR
+      volumes:
+      - name: pdf-temp
+        persistentVolumeClaim:
+          claimName: pdf-temp
+      - name: model-cache
+        emptyDir:
+          sizeLimit: 5Gi
+      - name: easyocr-cache
+        emptyDir:
+          sizeLimit: 2Gi
+      {{- if .Values.celeryWorker.gpu.enabled }}
+      nodeSelector:
+        nvidia.com/gpu.present: "true"
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+      {{- end }}

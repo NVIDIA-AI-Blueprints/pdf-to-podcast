@@ -33,6 +33,10 @@ from email import encoders
 # Add global TEST_USER_ID
 TEST_USER_ID = "test-userid"
 
+# Default ElevenLabs voices for TTS
+DEFAULT_VOICE_1 = os.getenv("DEFAULT_VOICE_1", "iP95p4xoKVk53GoZ742B")
+DEFAULT_VOICE_2 = os.getenv("DEFAULT_VOICE_2", "9BWtsMINqrJLrRacOk9x")
+
 
 class StatusMonitor:
     def __init__(self, base_url, job_id):
@@ -246,11 +250,11 @@ def test_api(
     vdb: bool = False,
 ):
     voice_mapping = {
-        "speaker-1": "iP95p4xoKVk53GoZ742B",
+        "speaker-1": DEFAULT_VOICE_1,
     }
 
     if not monologue:
-        voice_mapping["speaker-2"] = "9BWtsMINqrJLrRacOk9x"
+        voice_mapping["speaker-2"] = DEFAULT_VOICE_2
 
     process_url = f"{base_url}/process_pdf"
 

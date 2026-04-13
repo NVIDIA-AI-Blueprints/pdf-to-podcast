@@ -1,0 +1,104 @@
+# Kubernetes Services for custom application services
+# Redis, MinIO, and Jaeger services are managed by their subcharts
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pdf-api
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: pdf-api
+spec:
+  ports:
+  - port: 8004
+    targetPort: 8004
+    name: http
+  selector:
+    app: pdf-api
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pdf-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: pdf-service
+spec:
+  ports:
+  - port: 8003
+    targetPort: 8003
+    name: http
+  selector:
+    app: pdf-service
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: agent-service
+spec:
+  ports:
+  - port: 8964
+    targetPort: 8964
+    name: http
+  selector:
+    app: agent-service
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tts-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: tts-service
+spec:
+  ports:
+  - port: 8889
+    targetPort: 8889
+    name: http
+  selector:
+    app: tts-service
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: api-service
+spec:
+  ports:
+  - port: 8002
+    targetPort: 8002
+    name: http
+  selector:
+    app: api-service
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: frontend
+spec:
+  ports:
+  - port: 7860
+    targetPort: 7860
+    name: http
+  selector:
+    app: frontend
+  type: ClusterIP

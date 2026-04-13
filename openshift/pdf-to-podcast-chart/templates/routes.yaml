@@ -1,0 +1,80 @@
+{{- if .Values.route.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: pdf-to-podcast-api
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: api-service
+spec:
+  {{- if .Values.route.host }}
+  host: {{ .Values.route.host }}
+  {{- end }}
+  to:
+    kind: Service
+    name: api-service
+  port:
+    targetPort: http
+  {{- if .Values.route.tls.enabled }}
+  tls:
+    termination: {{ .Values.route.tls.termination }}
+    {{- if .Values.route.tls.insecureEdgeTerminationPolicy }}
+    insecureEdgeTerminationPolicy: {{ .Values.route.tls.insecureEdgeTerminationPolicy }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+---
+{{- if .Values.frontendRoute.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: pdf-to-podcast-frontend
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: frontend
+spec:
+  {{- if .Values.frontendRoute.host }}
+  host: {{ .Values.frontendRoute.host }}
+  {{- end }}
+  to:
+    kind: Service
+    name: frontend
+  port:
+    targetPort: http
+  {{- if .Values.frontendRoute.tls.enabled }}
+  tls:
+    termination: {{ .Values.frontendRoute.tls.termination }}
+    {{- if .Values.frontendRoute.tls.insecureEdgeTerminationPolicy }}
+    insecureEdgeTerminationPolicy: {{ .Values.frontendRoute.tls.insecureEdgeTerminationPolicy }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+---
+{{- if .Values.jaegerRoute.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: jaeger-ui
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: jaeger
+spec:
+  {{- if .Values.jaegerRoute.host }}
+  host: {{ .Values.jaegerRoute.host }}
+  {{- end }}
+  to:
+    kind: Service
+    name: {{ .Release.Name }}-jaeger-query
+  port:
+    targetPort: 16686
+  {{- if .Values.jaegerRoute.tls.enabled }}
+  tls:
+    termination: {{ .Values.jaegerRoute.tls.termination }}
+    {{- if .Values.jaegerRoute.tls.insecureEdgeTerminationPolicy }}
+    insecureEdgeTerminationPolicy: {{ .Values.jaegerRoute.tls.insecureEdgeTerminationPolicy }}
+    {{- end }}
+  {{- end }}
+{{- end }}

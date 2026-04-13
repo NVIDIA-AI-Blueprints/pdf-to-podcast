@@ -1,0 +1,270 @@
+# Default values for pdf-to-podcast
+# This is a YAML-formatted file.
+#
+# This chart follows OpenShift best practices by using Bitnami subcharts for
+# infrastructure (Redis, MinIO). This is the standard approach across certified
+# OpenShift partner charts. For long-term enterprise production, consider migrating
+# to Operators from OperatorHub while keeping this Helm chart for dev/test.
+
+# Global settings
+global:
+  namespace: pdf-to-podcast
+  createNamespace: false  # Set to true to create namespace, false to use existing
+  security:
+    # Allow using Quay.io registry (bypasses Bitnami's docker.io-only check)
+    allowInsecureImages: true
+
+# Image registry (OpenShift internal registry)
+imageRegistry: image-registry.openshift-image-registry.svc:5000/pdf-to-podcast
+
+# Image pull policy
+imagePullPolicy: Always
+
+# API Keys (passed via --set during deployment)
+apiKeys:
+  nvidia: ""  # Used for LLM (agent-service) - Set via --set or secrets
+  elevenlabs: ""  # Used for TTS service - Set via --set or secrets
+
+# Max concurrent TTS requests
+maxConcurrentRequests: 1
+
+# PDF temp storage (shared between pdf-api and celery-worker)
+pdfTempStorage:
+  size: 10Gi
+  storageClass: ""  # Use cluster default
+  accessMode: ReadWriteOnce  # Both pdf-api and celery-worker will be on same node
+
+#############################################################################
+# Redis configuration (standalone deployment using official Redis image)
+# Matches docker-compose setup: redis:latest with no persistence
+#############################################################################
+redis:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: redis
+    tag: latest
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+#############################################################################
+# MinIO configuration (using Red Hat AI Quickstart chart)
+# Docs: https://github.com/rh-ai-quickstart/ai-architecture-charts
+# Note: Application creates 'audio-results' bucket automatically on startup
+#############################################################################
+minio:
+  enabled: true
+  secret:
+    user: minioadmin
+    password: minioadmin  # CHANGE IN PRODUCTION
+    host: minio
+    port: "9000"
+  service:
+    type: ClusterIP
+    port: 9090  # Console UI
+    apiPort: 9000  # S3 API (what services connect to)
+  volumeClaimTemplates:
+    - metadata:
+        name: minio-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 50Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+#############################################################################
+# Jaeger configuration (using official Jaeger chart v3.x)
+# Docs: https://github.com/jaegertracing/helm-charts
+#############################################################################
+jaeger:
+  enabled: true
+  provisionDataStore:
+    cassandra: false
+    elasticsearch: false
+  allInOne:
+    enabled: true
+    image:
+      registry: quay.io
+      repository: jaegertracing/all-in-one
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+    podSecurityContext:
+      runAsUser:
+      runAsGroup:
+      fsGroup:
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+  storage:
+    type: memory
+  agent:
+    enabled: false
+  collector:
+    enabled: false
+  query:
+    enabled: false
+
+# Celery Worker configuration
+celeryWorker:
+  image:
+    tag: "latest"
+  replicas: 1
+  gpu:
+    enabled: false  # Set to true for GPU acceleration
+    count: 1
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 8Gi
+    limits:
+      cpu: 2000m
+      memory: 10Gi
+
+# PDF API configuration
+pdfApi:
+  image:
+    tag: "latest"
+  replicas: 1
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+# PDF Service configuration
+pdfService:
+  image:
+    tag: "latest"
+  replicas: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+# Agent Service configuration
+agentService:
+  image:
+    tag: "latest"
+  replicas: 1
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+# TTS Service configuration (NVIDIA Riva TTS)
+ttsService:
+  image:
+    tag: "latest"
+  replicas: 1
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+# API Service configuration
+apiService:
+  image:
+    tag: "latest"
+  replicas: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+# OpenShift Route configuration
+route:
+  enabled: true
+  host: ""  # Auto-generated if empty
+  tls:
+    enabled: true
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+
+#############################################################################
+# Frontend Service (Gradio web interface)
+#############################################################################
+frontend:
+  enabled: true
+  replicas: 1
+  image:
+    tag: latest
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+# Frontend Route (external access to Gradio UI)
+frontendRoute:
+  enabled: true
+  host: ""  # Auto-generated by OpenShift if not specified
+  tls:
+    enabled: true
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+
+# Jaeger Route (external access to tracing UI - disable in production)
+jaegerRoute:
+  enabled: true
+  host: ""  # Auto-generated by OpenShift if not specified
+  tls:
+    enabled: true
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+
+# Email configuration (optional)
+emailConfig:
+  enabled: false  # Set to true and provide secrets for email features
+
+# Models configuration PVC (writable storage for models.json config file)
+modelsConfigPVC:
+  size: 10Mi  # Small config file
+
+# Models configuration (from models.json)
+models:
+  reasoning:
+    name: "meta/llama-3.1-405b-instruct"
+    apiBase: "https://integrate.api.nvidia.com/v1"
+  json:
+    name: "meta/llama-3.1-70b-instruct"
+    apiBase: "https://integrate.api.nvidia.com/v1"
+  iteration:
+    name: "meta/llama-3.1-405b-instruct"
+    apiBase: "https://integrate.api.nvidia.com/v1"

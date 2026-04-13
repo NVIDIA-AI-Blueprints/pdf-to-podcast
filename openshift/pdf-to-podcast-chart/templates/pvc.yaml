@@ -1,0 +1,19 @@
+# PDF temp storage shared between pdf-api and celery-worker
+# Redis and MinIO PVCs are managed by their respective subcharts
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pdf-temp
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: pdf-processing
+spec:
+  accessModes:
+    - {{ .Values.pdfTempStorage.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.pdfTempStorage.size }}
+  {{- if .Values.pdfTempStorage.storageClass }}
+  storageClassName: {{ .Values.pdfTempStorage.storageClass }}
+  {{- end }}

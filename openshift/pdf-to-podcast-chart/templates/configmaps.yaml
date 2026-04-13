@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: models-config
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+data:
+  models.json: |
+    {
+      "reasoning": {
+        "name": "{{ .Values.models.reasoning.name }}",
+        "api_base": "{{ .Values.models.reasoning.apiBase }}"
+      },
+      "json": {
+        "name": "{{ .Values.models.json.name }}",
+        "api_base": "{{ .Values.models.json.apiBase }}"
+      },
+      "iteration": {
+        "name": "{{ .Values.models.iteration.name }}",
+        "api_base": "{{ .Values.models.iteration.apiBase }}"
+      }
+    }

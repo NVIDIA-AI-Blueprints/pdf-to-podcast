@@ -23,6 +23,7 @@ MAX_CONCURRENT_REQUESTS = int(os.getenv("MAX_CONCURRENT_REQUESTS", "5"))
 DEFAULT_VOICE_1 = os.getenv("DEFAULT_VOICE_1", "iP95p4xoKVk53GoZ742B")
 DEFAULT_VOICE_2 = os.getenv("DEFAULT_VOICE_2", "9BWtsMINqrJLrRacOk9x")
 DEFAULT_VOICE_MAPPING = {"speaker-1": DEFAULT_VOICE_1, "speaker-2": DEFAULT_VOICE_2}
+TTS_MODEL_ID = os.getenv("TTS_MODEL_ID", "eleven_monolingual_v1")
 
 telemetry = OpenTelemetryInstrumentation()
 config = OpenTelemetryConfig(
@@ -191,7 +192,7 @@ class TTSService:
         audio_stream = self.eleven_labs_client.text_to_speech.convert(
             text=text,
             voice_id=voice_id,
-            model_id="eleven_monolingual_v1",
+            model_id=TTS_MODEL_ID,
             output_format="mp3_44100_128",
             voice_settings={"stability": 0.5, "similarity_boost": 0.75, "style": 0.0},
         )

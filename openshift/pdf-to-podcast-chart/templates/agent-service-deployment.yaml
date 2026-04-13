@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: agent-service
+spec:
+  replicas: {{ .Values.agentService.replicas }}
+  selector:
+    matchLabels:
+      app: agent-service
+  template:
+    metadata:
+      labels:
+        app: agent-service
+        models-config-volume: shared
+    spec:
+      initContainers:
+      - name: init-models-config
+        image: busybox
+        command: ['sh', '-c', 'if [ ! -f /app/config/models.json ]; then cp /config-template/models.json /app/config/models.json; fi']
+        volumeMounts:
+        - name: models-config-template
+          mountPath: /config-template
+        - name: models-storage
+          mountPath: /app/config
+      containers:
+      - name: agent-service
+        image: "{{ .Values.imageRegistry }}/agent-service:{{ .Values.agentService.image.tag }}"
+        imagePullPolicy: {{ include "pdf-to-podcast.imagePullPolicy" . }}
+        ports:
+        - containerPort: 8964
+          name: http
+        env:
+        - name: OTLP_ENDPOINT
+          value: "{{ include "pdf-to-podcast.jaegerOtlpEndpoint" . }}"
+        - name: NVIDIA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-keys
+              key: NVIDIA_API_KEY
+        - name: REDIS_URL
+          value: "redis://{{ include "pdf-to-podcast.redisHost" . }}:6379"
+        - name: MODEL_CONFIG_PATH
+          value: "/app/config/models.json"
+        resources:
+          {{- toYaml .Values.agentService.resources | nindent 10 }}
+        volumeMounts:
+        - name: models-storage
+          mountPath: /app/config
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8964
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8964
+          initialDelaySeconds: 10
+          periodSeconds: 5
+      volumes:
+      - name: models-config-template
+        configMap:
+          name: models-config
+      - name: models-storage
+        persistentVolumeClaim:
+          claimName: models-config

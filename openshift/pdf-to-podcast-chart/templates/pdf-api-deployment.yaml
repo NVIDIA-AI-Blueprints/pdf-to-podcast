@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pdf-api
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pdf-to-podcast.labels" . | nindent 4 }}
+    app: pdf-api
+spec:
+  replicas: {{ .Values.pdfApi.replicas }}
+  selector:
+    matchLabels:
+      app: pdf-api
+  template:
+    metadata:
+      labels:
+        app: pdf-api
+        pdf-temp-volume: shared
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: pdf-temp-volume
+                operator: In
+                values:
+                - shared
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - name: pdf-api
+        image: "{{ .Values.imageRegistry }}/pdf-api:{{ .Values.pdfApi.image.tag }}"
+        imagePullPolicy: {{ include "pdf-to-podcast.imagePullPolicy" . }}
+        ports:
+        - containerPort: 8004
+          name: http
+        env:
+        - name: CELERY_BROKER_URL
+          value: "redis://{{ include "pdf-to-podcast.redisHost" . }}:6379/0"
+        - name: CELERY_RESULT_BACKEND
+          value: "redis://{{ include "pdf-to-podcast.redisHost" . }}:6379/0"
+        - name: REDIS_HOST
+          value: "{{ include "pdf-to-podcast.redisHost" . }}"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: TEMP_FILE_DIR
+          value: "/tmp/pdf_conversions"
+        resources:
+          {{- toYaml .Values.pdfApi.resources | nindent 10 }}
+        volumeMounts:
+        - name: pdf-temp
+          mountPath: /tmp/pdf_conversions
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8004
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8004
+          initialDelaySeconds: 10
+          periodSeconds: 5
+      volumes:
+      - name: pdf-temp
+        persistentVolumeClaim:
+          claimName: pdf-temp

@@ -1,0 +1,56 @@
+# Production overrides
+
+# Higher replica counts for production
+apiService:
+  replicas: 3
+
+agentService:
+  replicas: 2
+
+ttsService:
+  replicas: 2
+
+pdfApi:
+  replicas: 2
+
+celeryWorker:
+  replicas: 2
+  resources:
+    requests:
+      cpu: 4000m
+      memory: 8Gi
+    limits:
+      cpu: 8000m
+      memory: 16Gi
+
+frontend:
+  replicas: 1  # Single replica (demo/dev environment)
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+
+# Larger storage for production
+pdfTempStorage:
+  size: 20Gi
+
+minio:
+  volumeClaimTemplates:
+    - metadata:
+        name: minio-data
+      spec:
+        resources:
+          requests:
+            storage: 100Gi
+
+# Stronger MinIO credentials
+minio:
+  credentials:
+    rootUser: admin
+    # Generate password: openssl rand -base64 32
+    rootPassword: "CHANGE-ME-IN-PRODUCTION"
+
+maxConcurrentRequests: 5

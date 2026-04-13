@@ -1,0 +1,8 @@
+# Exclude actual secrets
+secrets.env
+*.env
+!*.env.template
+
+# Helm package and dependency files
+*.tgz
+pdf-to-podcast-chart/charts/
