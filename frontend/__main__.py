@@ -274,4 +274,8 @@ with gr.Blocks(css=css, js=js_func) as demo:
 
 # Launch Gradio app
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", root_path=os.environ.get("PROXY_PREFIX"))
+    demo.launch(
+        server_name="0.0.0.0",
+        root_path=os.environ.get("PROXY_PREFIX"),
+        allowed_paths=["/project/frontend/demo_outputs"]  # Allow serving generated podcast files
+    )
