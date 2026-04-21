@@ -51,8 +51,10 @@ jobs:
           sudo apt-get install -y docker-compose-plugin docker-compose build-essential
 
       - name: Run Jupyter Notebook
+        id: run_notebook
         env:
-          ${{ secrets }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
         run: |
           # Verify required environment variables
           required_vars=("ELEVENLABS_API_KEY" "NVIDIA_API_KEY")
@@ -66,6 +68,18 @@ jobs:
           OUTPUT_NOTEBOOK="result.ipynb"
           echo "Executing notebook: $NOTEBOOK_PATH"
           papermill "$NOTEBOOK_PATH" "$OUTPUT_NOTEBOOK" --log-output --log-level DEBUG
+
+      - name: Docker container status and logs (on notebook failure)
+        if: ${{ failure() && steps.run_notebook.conclusion == 'failure' }}
+        run: |
+          echo "=== docker ps --all ==="
+          docker ps --all || true
+          echo ""
+          for id in $(docker ps -aq || true); do
+            [ -z "$id" ] && continue
+            echo "=== last 500 lines of logs for container $id ==="
+            docker logs --tail 500 "$id" 2>&1 || echo "(docker logs failed for $id)"
+          done
 
       - name: Convert result to html format
         if: always()
