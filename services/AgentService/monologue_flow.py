@@ -249,8 +249,8 @@ async def monologue_create_final_conversation(
     )
 
     # Ensure all strings are unescaped
-    if "dialogues" in conversation_json:
-        for entry in conversation_json["dialogues"]:
+    if "dialogue" in conversation_json:
+        for entry in conversation_json["dialogue"]:
             if "text" in entry:
                 entry["text"] = unescape_unicode_string(entry["text"])
 
