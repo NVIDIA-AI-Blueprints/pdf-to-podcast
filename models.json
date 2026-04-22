@@ -1,14 +1,14 @@
 {
   "reasoning": {
-    "name": "meta/llama-3.3-70b-instruct",
+    "name": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "api_base": "https://integrate.api.nvidia.com/v1"
   },
   "json": {
-    "name": "meta/llama-3.3-70b-instruct",
+    "name": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "api_base": "https://integrate.api.nvidia.com/v1"
   },
   "iteration": {
-    "name": "meta/llama-3.3-70b-instruct",
+    "name": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "api_base": "https://integrate.api.nvidia.com/v1"
   }
 }
