@@ -50,6 +50,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose-plugin docker-compose build-essential
 
+      - name: Setup notebook compatibility
+        run: |
+          ln -sf . pdf-to-podcast
+
       - name: Run Jupyter Notebook
         id: run_notebook
         env:
