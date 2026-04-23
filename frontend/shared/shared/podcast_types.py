@@ -35,7 +35,7 @@ class DialogueEntry(BaseModel):
 
 
 class Conversation(BaseModel):
-    scratchpad: str
+    scratchpad: str = ""
     dialogue: List[DialogueEntry]
 
 

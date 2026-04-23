@@ -233,7 +233,10 @@ with gr.Blocks(css=css, js=js_func) as demo:
         if target is None or len(target) == 0:
             gr.Warning("Target PDF upload not detected. Please upload a target PDF file and try again. ")
             return gr.update(visible=False)
-        
+
+        # Prevent TypeError when accordion not opened (recipient is None)
+        recipient = recipient or ""
+
         sender_email = os.environ["SENDER_EMAIL"] if "SENDER_EMAIL" in os.environ else None
         
         if isinstance(target, str):
@@ -271,4 +274,8 @@ with gr.Blocks(css=css, js=js_func) as demo:
 
 # Launch Gradio app
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", root_path=os.environ.get("PROXY_PREFIX"))
+    demo.launch(
+        server_name="0.0.0.0",
+        root_path=os.environ.get("PROXY_PREFIX"),
+        allowed_paths=["/project/frontend/demo_outputs"]  # Allow serving generated podcast files
+    )

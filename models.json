@@ -4,11 +4,11 @@
     "api_base": "https://integrate.api.nvidia.com/v1"
   },
   "json": {
-    "name": "meta/llama-3.1-8b-instruct",
+    "name": "meta/llama-3.1-70b-instruct",
     "api_base": "https://integrate.api.nvidia.com/v1"
   },
   "iteration": {
-    "name": "meta/llama-3.1-70b-instruct",
+    "name": "meta/llama-3.1-405b-instruct",
     "api_base": "https://integrate.api.nvidia.com/v1"
   }
 }

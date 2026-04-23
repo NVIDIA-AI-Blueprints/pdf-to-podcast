@@ -199,7 +199,6 @@ async def podcast_generate_structured_outline(
         "enum": valid_filenames,
     }
 
-    schema = PodcastOutline.model_json_schema()
     template = PodcastPrompts.get_template(
         "podcast_multi_pdf_structured_outline_prompt"
     )
