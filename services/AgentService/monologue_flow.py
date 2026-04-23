@@ -248,6 +248,12 @@ async def monologue_create_final_conversation(
         json_schema=schema,
     )
 
+    # Normalize: LLM sometimes wraps response in an extra key (e.g. "conversation")
+    if "dialogue" not in conversation_json and len(conversation_json) == 1:
+        inner = next(iter(conversation_json.values()))
+        if isinstance(inner, dict) and "dialogue" in inner:
+            conversation_json = inner
+
     # Ensure all strings are unescaped
     if "dialogue" in conversation_json:
         for entry in conversation_json["dialogue"]:

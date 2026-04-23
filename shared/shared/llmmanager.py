@@ -151,7 +151,6 @@ class LLMManager:
                 base_url=config.api_base,
                 nvidia_api_key=self.api_key,
                 max_tokens=None,
-                timeout=300,
             )
         return self._llm_cache[model_key]
 

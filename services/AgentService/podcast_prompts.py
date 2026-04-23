@@ -91,7 +91,7 @@ Convert the following outline into a structured JSON format. The final section s
 Output Requirements:
 1. Each segment must include:
    - section name
-   - duration (in seconds) representing the length of the segment
+   - duration (in minutes) representing the length of the segment
    - list of references (file paths)
    - list of topics, where each topic has:
      - title
@@ -104,8 +104,8 @@ Output Requirements:
 3. Important notes:
    - References must be chosen from this list of valid filenames: {{ valid_filenames }}
    - References should only appear in the segment's "references" array, not as a topic
-   - Duration represents the length of each segment in seconds, not its starting timestamp
-   - Each segment's duration MUST be a positive INTEGER in seconds (whole number only, no decimals)
+   - Duration represents the length of each segment, not its starting timestamp
+   - Each segment's duration should be a positive number
 
 The result must conform to the following JSON schema:
 {{ schema }}
