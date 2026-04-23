@@ -90,13 +90,52 @@ IMPORTANT:  This will be used in the NVIDIA_API_KEY environment variable below.
 
 4. **Set environment variables**
 
+   Create a `.env` file in the **root directory of the repository** with your API keys:
+
    ```bash
-   #Create env file with required variables in /home/<username>/.local/bin/env  
-   echo "ELEVENLABS_API_KEY=your_key" >> .env
-   echo "NVIDIA_API_KEY=your_key" >> .env
-   echo "MAX_CONCURRENT_REQUESTS=1" >> .env
+   # Create .env file in the repo root directory
+   cat > .env << 'EOF'
+   ELEVENLABS_API_KEY=your_key
+   NVIDIA_API_KEY=your_key
+   MAX_CONCURRENT_REQUESTS=1
+   EOF
    ```
-> **Note:** the ElevenLabs API key can handle concurrent requests. For local development, set MAX_CONCURRENT_REQUESTS=1 to avoid rate-limiting issues.
+
+   Or create it manually by adding these lines to a new `.env` file:
+   ```
+   ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+   NVIDIA_API_KEY=your_nvidia_api_key_here
+   MAX_CONCURRENT_REQUESTS=1
+   ```
+
+> **Note:** The ElevenLabs API key can handle concurrent requests. For local development, set MAX_CONCURRENT_REQUESTS=1 to avoid rate-limiting issues.
+
+<details>
+<summary><strong>Troubleshooting: <code>~/.local/bin/env: No such file or directory</code></strong></summary>
+
+This error only occurs on **first-time setup** when `uv` hasn't been installed before.
+
+**Important:** Don't confuse these two files:
+| File | Location | Purpose |
+|------|----------|---------|
+| `.env` | Repo root | Your API keys (what you created above) |
+| `env` | `~/.local/bin/env` | Shell script auto-created by `uv` installer |
+
+**To fix:**
+```bash
+# Install uv (creates ~/.local/bin/env automatically)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Add uv to your PATH
+source ~/.local/bin/env
+
+# Now run make uv
+make uv
+```
+
+**Alternative:** If `uv` is already installed via Homebrew or pipx, just ensure it's in your PATH.
+
+</details>
 
 5. **Install dependencies**
 
