@@ -199,7 +199,6 @@ async def podcast_generate_structured_outline(
         "enum": valid_filenames,
     }
 
-    schema = PodcastOutline.model_json_schema()
     template = PodcastPrompts.get_template(
         "podcast_multi_pdf_structured_outline_prompt"
     )
@@ -214,6 +213,14 @@ async def podcast_generate_structured_outline(
         "outline",
         json_schema=schema,
     )
+    # Normalize: LLM sometimes returns plain strings for points instead of
+    # {"description": "..."} objects. Wrap strings to match SegmentPoint model.
+    for seg in outline.get("segments", []):
+        for topic in seg.get("topics", []):
+            topic["points"] = [
+                p if isinstance(p, dict) else {"description": p}
+                for p in topic.get("points", [])
+            ]
     prompt_tracker.track(
         "outline", prompt, llm_manager.model_configs["json"].name, json.dumps(outline)
     )
@@ -587,17 +594,22 @@ async def podcast_create_final_conversation(
         schema=json.dumps(schema, indent=2),
     )
 
-    # We accumulate response as it comes in then cast
-    conversation_json: Dict = await llm_manager.stream_async(
+    conversation_json: Dict = await llm_manager.query_async(
         "json",
         [{"role": "user", "content": prompt}],
         "create_final_conversation",
         json_schema=schema,
     )
 
+    # Normalize: LLM sometimes wraps response in an extra key (e.g. "conversation")
+    if "dialogue" not in conversation_json and len(conversation_json) == 1:
+        inner = next(iter(conversation_json.values()))
+        if isinstance(inner, dict) and "dialogue" in inner:
+            conversation_json = inner
+
     # Ensure all strings are unescaped
-    if "dialogues" in conversation_json:
-        for entry in conversation_json["dialogues"]:
+    if "dialogue" in conversation_json:
+        for entry in conversation_json["dialogue"]:
             if "text" in entry:
                 entry["text"] = unescape_unicode_string(entry["text"])
 

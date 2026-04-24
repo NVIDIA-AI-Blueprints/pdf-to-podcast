@@ -191,7 +191,7 @@ class TTSService:
         audio_stream = self.eleven_labs_client.text_to_speech.convert(
             text=text,
             voice_id=voice_id,
-            model_id="eleven_monolingual_v1",
+            model_id="eleven_turbo_v2_5",
             output_format="mp3_44100_128",
             voice_settings={"stability": 0.5, "similarity_boost": 0.75, "style": 0.0},
         )
