@@ -19,7 +19,7 @@ For more information about the PDF, Agent and TTS service flows, please refer to
    - Response generation (Inference)
       - [NIM for meta/llama-3.1-8b-instruct](https://build.nvidia.com/meta/llama-3_1-8b-instruct)
       - [NIM for meta/llama-3.1-70b-instruct](https://build.nvidia.com/meta/llama-3_1-70b-instruct)
-      - [NIM for meta/llama-3.1-405B-instruct](https://build.nvidia.com/meta/llama-3_1-405b-instruct)
+      - [NIM for nvidia/llama-3.3-nemotron-super-49b-v1.5](https://build.nvidia.com/nvidia/llama-3_3-nemotron-super-49b-v1_5)
 - Document ingest and extraction - [Docling](https://github.com/DS4SD/docling)
 - Text-to-speech - [ElevenLabs](https://elevenlabs.io/)
 - Redis - [Redis](https://redis.io/)

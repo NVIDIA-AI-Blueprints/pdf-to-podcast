@@ -36,7 +36,7 @@ def test(base_url: str):
         "duration": 5,
         "speaker_1_name": "Blackwell",
         "speaker_2_name": "Hopper",
-        "model": "meta/llama-3.1-405b-instruct",
+        "model": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
         "voice_mapping": voice_mapping,  # Add voice mapping
     }
 
