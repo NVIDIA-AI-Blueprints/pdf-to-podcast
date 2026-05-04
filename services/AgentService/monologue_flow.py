@@ -18,6 +18,24 @@ from monologue_prompts import FinancialSummaryPrompts  # Prompt templates
 from langchain_core.messages import AIMessage  # LLM message type
 import asyncio  # Async functionality
 
+_module_logger = logging.getLogger(__name__)
+
+# Cap PDF markdown passed to the summarizer so input + output + thinking fits
+# the 131,072-token context window of nvidia/llama-3.3-nemotron-super-49b-v1.5.
+# 350,000 chars ≈ 85-115K tokens (depending on content density), leaving headroom
+# for the prompt template, the model's thinking trace, and max_tokens output.
+_MAX_SUMMARY_INPUT_CHARS = 350_000
+
+
+def _truncate_for_summary(filename: str, markdown: str) -> str:
+    if len(markdown) <= _MAX_SUMMARY_INPUT_CHARS:
+        return markdown
+    _module_logger.warning(
+        "Truncating %s markdown for summary: %d -> %d chars (context-window cap)",
+        filename, len(markdown), _MAX_SUMMARY_INPUT_CHARS,
+    )
+    return markdown[:_MAX_SUMMARY_INPUT_CHARS]
+
 
 async def monologue_summarize_pdf(
     pdf_metadata: PDFMetadata, llm_manager: LLMManager, prompt_tracker: PromptTracker
@@ -37,7 +55,9 @@ async def monologue_summarize_pdf(
     prompt and response for monitoring purposes.
     """
     template = FinancialSummaryPrompts.get_template("monologue_summary_prompt")
-    prompt = template.render(text=pdf_metadata.markdown)
+    prompt = template.render(
+        text=_truncate_for_summary(pdf_metadata.filename, pdf_metadata.markdown)
+    )
 
     summary_response: AIMessage = await llm_manager.query_async(
         "reasoning",
