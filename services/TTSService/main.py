@@ -135,7 +135,7 @@ class TTSService:
                 )
 
                 combined_audio = await self._process_dialogue(
-                    job_id, request.dialogue, request.voice_mapping
+                    job_id, request.dialogue, voice_mapping
                 )
 
                 job_manager.set_result(job_id, combined_audio)
