@@ -4,6 +4,8 @@ uvicorn
 celery[redis]
 redis
 docling==2.2.0
+docling-core==2.82.0
+docling-ibm-models==2.0.8
 opentelemetry-api
 opentelemetry-sdk
 opentelemetry-instrumentation-fastapi

@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   run-notebook:
-    runs-on: arc-runners-org-nvidia-ai-bp-2-gpu
+    runs-on: arc-runners-org-nvidia-ai-bp-1-gpu
     env:
       NOTEBOOK_PATH: ./launchable/PDFtoPodcast.ipynb
       PYTHON_VERSION: 3.12
