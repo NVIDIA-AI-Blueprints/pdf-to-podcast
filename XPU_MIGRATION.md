@@ -1,7 +1,7 @@
 # Running pdf-to-podcast on Intel GPUs (XPU)
 
 This branch ports the NVIDIA-AI-Blueprints `pdf-to-podcast` stack from
-NVIDIA/CUDA + cloud services to **Intel GPUs (Arc / Arc Pro / Battlemage)**
+NVIDIA/CUDA + cloud services to **Intel Arc Pro GPUs**
 using upstream vLLM-XPU. The diff against `main` is the "what to change"
 comparison; this document explains each change and how to run it.
 
@@ -32,8 +32,7 @@ needed to move between hosts.
 
 - Docker with Intel GPU access on the host (`/dev/dri/renderD*` present; user
   in the `render`/`video` groups).
-- An Intel GPU with enough VRAM for Llama-3.1-8B at bf16 (~16 GB) — e.g. a
-  single Arc Pro B60.
+- An Intel Arc Pro GPU with enough VRAM for Llama-3.1-8B at bf16 (~16 GB).
 - The LLM weights cached locally (default `/data/llm-models/Llama-3.1-8B-Instruct`).
 - A vLLM-XPU image that can enumerate the host GPU (default
   `aicssdev/vllm-xpu:main-fe57be780`).

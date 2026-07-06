@@ -4,7 +4,7 @@
 # serves on host port 8100 by default.
 #
 # All host-specifics are env-overridable; defaults target a single Intel Arc
-# Pro (B60) with the model cached under /data/llm-models.
+# Pro GPU with the model cached under /data/llm-models.
 #
 #   VLLM_IMAGE      container image (must be able to enumerate the host GPU)
 #   MODEL_PATH      path to the model weights (mounted read-only)
