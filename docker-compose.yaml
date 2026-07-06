@@ -107,7 +107,7 @@ services:
     ports:
       - "8889:8889"
     environment:
-      - MAX_CONCURRENT_REQUESTS=${MAX_CONCURRENT_REQUESTS:-2}
+      - MAX_CONCURRENT_REQUESTS=${MAX_CONCURRENT_REQUESTS:-1}
       - REDIS_URL=redis://redis:6379
       # XPU: Parler-TTS device. "cpu" is portable and always works; set
       # TTS_DEVICE=xpu only on a host whose Level Zero UMD matches the kernel

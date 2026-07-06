@@ -5,6 +5,7 @@ from typing import List, Dict, Optional
 import logging
 import os
 import io
+import threading
 import soundfile as sf
 import numpy as np
 import torch
@@ -20,7 +21,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Parler-TTS Service", debug=True)
-MAX_CONCURRENT_REQUESTS = int(os.getenv("MAX_CONCURRENT_REQUESTS", "2"))
+# Segments within a job are synthesised sequentially (see _process_dialogue),
+# so this sizes the pool for cross-job concurrency, not intra-job parallelism.
+# Default 1 matches docker-compose and .env.xpu.example.
+MAX_CONCURRENT_REQUESTS = int(os.getenv("MAX_CONCURRENT_REQUESTS", "1"))
 TTS_MODEL_NAME = os.getenv("TTS_MODEL", "parler-tts/parler-tts-mini-v1")
 TTS_DEVICE = os.getenv("TTS_DEVICE", "auto")
 
@@ -77,19 +81,28 @@ class TTSService:
         logger.info(f"TTS running on device: {self.device}")
         self._model = None
         self._tokenizer = None
+        # Guards the lazy load so concurrent first requests (pool size > 1)
+        # cannot load the model twice / race on self._model.
+        self._load_lock = threading.Lock()
 
     def _load_model(self):
         if self._model is not None:
             return
-        from parler_tts import ParlerTTSForConditionalGeneration
-        from transformers import AutoTokenizer
-        logger.info(f"Loading Parler-TTS model: {TTS_MODEL_NAME}")
-        self._tokenizer = AutoTokenizer.from_pretrained(TTS_MODEL_NAME)
-        self._model = ParlerTTSForConditionalGeneration.from_pretrained(
-            TTS_MODEL_NAME, torch_dtype=torch.float32
-        ).to(self.device)
-        self._model.eval()
-        logger.info("Parler-TTS model loaded")
+        with self._load_lock:
+            # Double-checked: another thread may have loaded it while we waited.
+            if self._model is not None:
+                return
+            from parler_tts import ParlerTTSForConditionalGeneration
+            from transformers import AutoTokenizer
+            logger.info(f"Loading Parler-TTS model: {TTS_MODEL_NAME}")
+            tokenizer = AutoTokenizer.from_pretrained(TTS_MODEL_NAME)
+            model = ParlerTTSForConditionalGeneration.from_pretrained(
+                TTS_MODEL_NAME, torch_dtype=torch.float32
+            ).to(self.device)
+            model.eval()
+            self._tokenizer = tokenizer
+            self._model = model
+            logger.info("Parler-TTS model loaded")
 
     @lru_cache(maxsize=1)
     def get_available_voices(self) -> List[VoiceInfo]:

@@ -17,6 +17,13 @@ RUN set -x \
 
 WORKDIR /workspace
 
+# XPU: install CPU-only PyTorch first so parler-tts's bare `torch` dependency
+# does not pull the multi-GB CUDA wheel stack (nvidia-*). To run TTS on an
+# Intel GPU instead, replace this with the XPU torch build and set
+# TTS_DEVICE=xpu (see XPU_MIGRATION.md).
+RUN pip install --no-cache-dir \
+    torch --index-url https://download.pytorch.org/whl/cpu
+
 RUN pip install --no-cache-dir \
     fastapi uvicorn pydantic redis httpx \
     soundfile numpy \

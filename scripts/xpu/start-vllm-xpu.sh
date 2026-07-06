@@ -46,7 +46,7 @@ echo "Starting $NAME on card $ZE_AFFINITY_MASK, port $VLLM_PORT (model: $SERVED_
 docker run -d --name "$NAME" \
   "${DEV_ARGS[@]}" \
   --group-add video --group-add render \
-  -v "$DATA_MOUNT:$DATA_MOUNT" \
+  -v "$DATA_MOUNT:$DATA_MOUNT:ro" \
   -p "${VLLM_PORT}:8000" \
   -e ZE_FLAT_DEVICE_HIERARCHY=COMPOSITE \
   -e ZE_AFFINITY_MASK="$ZE_AFFINITY_MASK" \
