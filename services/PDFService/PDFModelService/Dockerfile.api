@@ -1,4 +1,5 @@
-FROM pytorch/pytorch:2.4.0-cuda12.4-cudnn9-devel
+# XPU: CUDA base image dropped — this API container does no GPU work.
+FROM python:3.11-slim
 
 # Install system dependencies
 RUN apt-get update \
@@ -13,7 +14,7 @@ WORKDIR /app
 
 # Install Python dependencies - only API requirements
 COPY requirements.api.txt /app/
-RUN pip install -r requirements.api.txt
+RUN pip install --no-cache-dir -r requirements.api.txt
 
 # Copy application files
 COPY main.py /app/

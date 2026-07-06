@@ -18,6 +18,7 @@ setup(
         "pydantic",  # For data validation and serialization
         "httpx",  # For async HTTP requests
         "requests",  # For sync HTTP requests
-        "langchain-nvidia-ai-endpoints",  # For AI model integration
+        "langchain-nvidia-ai-endpoints",  # For remote NIM endpoints
+        "langchain-openai",  # XPU: for local vLLM-XPU / SGLang-XPU OpenAI-compatible endpoints
     ],
 )

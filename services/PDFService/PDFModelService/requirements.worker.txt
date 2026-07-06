@@ -5,9 +5,7 @@ opencv-python==4.8.0.74
 opencv-contrib-python==4.8.0.74
 torch
 torchvision
-docling==2.2.0
-docling-core==2.82.0
-docling-ibm-models==2.0.8
+docling>=2.5.0
 opentelemetry-api
 opentelemetry-sdk
 opentelemetry-instrumentation-fastapi

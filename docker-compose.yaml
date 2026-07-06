@@ -53,11 +53,17 @@ services:
     ports:
       - "8964:8964"
     environment:
-      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      # XPU: default "local" so no real NVIDIA key is required when models.json
+      # points at a local vLLM-XPU / SGLang-XPU endpoint.
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY:-local}
       - REDIS_URL=redis://redis:6379
       - MODEL_CONFIG_PATH=/app/config/models.json
     volumes:
       - ./models.json:/app/config/models.json
+    # XPU: reach the vLLM-XPU server running on the host (models.json uses
+    # http://host.docker.internal:8100).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - redis
     networks:
@@ -86,9 +92,21 @@ services:
     ports:
       - "8889:8889"
     environment:
-      - MAX_CONCURRENT_REQUESTS=${MAX_CONCURRENT_REQUESTS}
-      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - MAX_CONCURRENT_REQUESTS=${MAX_CONCURRENT_REQUESTS:-2}
       - REDIS_URL=redis://redis:6379
+      # XPU: Parler-TTS device. "cpu" is portable and always works; set
+      # TTS_DEVICE=xpu only on a host whose Level Zero UMD matches the kernel
+      # driver (see XPU_MIGRATION.md). "auto" falls back cpu if no XPU.
+      - TTS_DEVICE=${TTS_DEVICE:-cpu}
+      - TTS_MODEL=${TTS_MODEL:-parler-tts/parler-tts-mini-v1}
+      # HF cache + proxy for the first-run model download (empty by default).
+      - HF_HOME=${HF_HOME:-/data/hf-cache}
+      - HTTP_PROXY=${HTTP_PROXY:-}
+      - HTTPS_PROXY=${HTTPS_PROXY:-}
+      - NO_PROXY=${NO_PROXY:-localhost,127.0.0.1,redis}
+    # XPU: pre-downloaded HF cache mount (host path -> container HF_HOME).
+    volumes:
+      - ${HF_CACHE_DIR:-./data/hf-cache}:/data/hf-cache
     depends_on:
       - redis
     networks:
@@ -139,6 +157,12 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - TEMP_FILE_DIR=/tmp/pdf_conversions
+      # XPU: proxy for Docling's first-run layout-model download (empty by
+      # default; set on proxied hosts). Docling parses on CPU — no device
+      # mounts needed here.
+      - HTTP_PROXY=${HTTP_PROXY:-}
+      - HTTPS_PROXY=${HTTPS_PROXY:-}
+      - NO_PROXY=${NO_PROXY:-localhost,127.0.0.1,redis}
     volumes:
       - pdf_temp:/tmp/pdf_conversions
     depends_on:

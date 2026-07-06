@@ -1,4 +1,7 @@
-FROM pytorch/pytorch:2.4.0-cuda12.4-cudnn9-devel
+# XPU: CUDA base image dropped. Docling parses on CPU here (no explicit
+# .cuda() calls in this service), so a slim Python base is sufficient and
+# avoids pulling the CUDA runtime. See XPU_MIGRATION.md.
+FROM python:3.11-slim
 
 # Install system dependencies
 RUN apt-get update \
@@ -16,11 +19,11 @@ WORKDIR /app
 
 # Install Python dependencies - worker requirements with ML dependencies
 COPY requirements.worker.txt /app/
-RUN pip install -r requirements.worker.txt
+RUN pip install --no-cache-dir -r requirements.worker.txt
 
-# Download required models
-RUN echo 'from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models\nload_pretrained_nlp_models(verbose=True)' > download_models.py
-RUN python download_models.py
+# XPU: the upstream `deepsearch_glm` model pre-download step is removed —
+# it is not needed with docling >= 2.5 (see requirements.worker.txt) and
+# pulled a model the offline/proxied container could not always reach.
 
 # Copy application files
 COPY tasks.py /app/

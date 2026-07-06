@@ -19,6 +19,7 @@ RUN pip install fastapi uvicorn pydantic python-dotenv jinja2 redis minio opente
     opentelemetry-exporter-otlp-proto-grpc \
     opentelemetry-instrumentation-httpx \
     opentelemetry-instrumentation-urllib3 \
+    langchain-openai \
     ujson
 
 WORKDIR /app

@@ -1,4 +1,15 @@
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
+
+# XPU: ChatOpenAI is used for local OpenAI-compatible endpoints (vLLM-XPU /
+# SGLang-XPU). ChatNVIDIA.with_structured_output() does not forward
+# response_format: json_schema to a generic endpoint — it falls back to
+# text JSON extraction and the model echoes the schema, breaking the
+# structured outline/dialogue steps. ChatOpenAI forwards it. See
+# XPU_MIGRATION.md.
+try:
+    from langchain_openai import ChatOpenAI
+except ImportError:
+    ChatOpenAI = None
 from typing import List, Dict, Any, Optional, Union
 import logging
 import ujson as json
@@ -146,12 +157,27 @@ class LLMManager:
             raise ValueError(f"Unknown model key: {model_key}")
         if model_key not in self._llm_cache:
             config = self.model_configs[model_key]
-            self._llm_cache[model_key] = ChatNVIDIA(
-                model=config.name,
-                base_url=config.api_base,
-                nvidia_api_key=self.api_key,
-                max_tokens=None,
+            # XPU: route local OpenAI-compatible endpoints through ChatOpenAI
+            # (forwards response_format for structured output); keep ChatNVIDIA
+            # for remote build.nvidia.com / NIM endpoints.
+            is_local = any(
+                h in config.api_base
+                for h in ("host.docker.internal", "localhost", "127.0.0.1")
             )
+            if is_local and ChatOpenAI is not None:
+                self._llm_cache[model_key] = ChatOpenAI(
+                    model=config.name,
+                    base_url=config.api_base,
+                    api_key=self.api_key or "local",
+                    max_tokens=None,
+                )
+            else:
+                self._llm_cache[model_key] = ChatNVIDIA(
+                    model=config.name,
+                    base_url=config.api_base,
+                    nvidia_api_key=self.api_key,
+                    max_tokens=None,
+                )
         return self._llm_cache[model_key]
 
     def query_sync(

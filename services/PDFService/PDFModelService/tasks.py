@@ -2,6 +2,8 @@ from celery import Celery
 import os
 from docling.document_converter import DocumentConverter
 from docling.datamodel.base_models import ConversionStatus
+from docling.datamodel.pipeline_options import PdfPipelineOptions
+from docling.document_converter import PdfFormatOption
 import logging
 from typing import List, Dict
 
@@ -28,7 +30,19 @@ celery_app.conf.update(
 @celery_app.task(bind=True, max_retries=3)
 def convert_pdf_task(self, file_paths: List[str]) -> List[Dict[str, str]]:
     try:
-        converter = DocumentConverter()
+        # XPU: OCR disabled. docling >= 2.5 otherwise downloads a RapidOCR
+        # model at runtime, which fails in an offline / proxied container.
+        # Text-native (typeset) PDFs do not need OCR. Set
+        # do_ocr = True only if scanned PDFs must be supported and the OCR
+        # model is reachable. See XPU_MIGRATION.md.
+        pipeline_options = PdfPipelineOptions()
+        pipeline_options.do_ocr = False
+        pipeline_options.do_table_structure = True
+        converter = DocumentConverter(
+            format_options={
+                "pdf": PdfFormatOption(pipeline_options=pipeline_options)
+            }
+        )
         results = []
         conversion_results = converter.convert_all(
             file_paths,
