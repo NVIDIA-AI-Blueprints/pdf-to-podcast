@@ -48,6 +48,9 @@ cp .env.xpu.example .env          # edit if your host differs from the defaults
 bash scripts/xpu/start-vllm-xpu.sh
 
 # 3. Build + start the application stack
+# On a proxied / air-gapped host, the HTTP(S)_PROXY values in .env are passed
+# to the image builds automatically (compose build args), so apt/pip can reach
+# the internet. On a direct-internet host, leave those blank.
 docker compose --env-file .env up -d --build
 
 # 4. Generate a podcast (5-page text PDF example)

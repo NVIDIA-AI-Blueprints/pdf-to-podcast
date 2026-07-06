@@ -1,3 +1,14 @@
+# XPU: proxy build-args. Docker BUILD steps (apt-get, pip) need the proxy
+# separately from runtime env. These read from .env; on a direct-internet
+# host they are empty and harmless. Referenced by every build section below.
+x-proxy-build-args: &proxy-build-args
+  HTTP_PROXY: ${HTTP_PROXY:-}
+  HTTPS_PROXY: ${HTTPS_PROXY:-}
+  NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1,redis}
+  http_proxy: ${HTTP_PROXY:-}
+  https_proxy: ${HTTPS_PROXY:-}
+  no_proxy: ${NO_PROXY:-localhost,127.0.0.1,redis}
+
 services:
   redis:
     image: redis:latest
@@ -30,6 +41,7 @@ services:
     build:
       context: .
       dockerfile: services/APIService/Dockerfile
+      args: *proxy-build-args
     ports:
       - "8002:8002"
     environment:
@@ -50,6 +62,7 @@ services:
     build:
       context: .
       dockerfile: services/AgentService/Dockerfile
+      args: *proxy-build-args
     ports:
       - "8964:8964"
     environment:
@@ -73,6 +86,7 @@ services:
     build:
       context: .
       dockerfile: services/PDFService/Dockerfile
+      args: *proxy-build-args
     ports:
       - "8003:8003"
     environment:
@@ -89,6 +103,7 @@ services:
     build:
       context: .
       dockerfile: services/TTSService/Dockerfile
+      args: *proxy-build-args
     ports:
       - "8889:8889"
     environment:
@@ -132,6 +147,7 @@ services:
     build:
       context: services/PDFService/PDFModelService
       dockerfile: Dockerfile.api
+      args: *proxy-build-args
     ports:
       - "8004:8004"
     environment:
@@ -153,6 +169,7 @@ services:
     build:
       context: services/PDFService/PDFModelService
       dockerfile: Dockerfile.worker
+      args: *proxy-build-args
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
