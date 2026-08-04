@@ -21,7 +21,8 @@ For more information about the PDF, Agent and TTS service flows, please refer to
       - [NIM for meta/llama-3.1-70b-instruct](https://build.nvidia.com/meta/llama-3_1-70b-instruct)
       - [NIM for nvidia/llama-3.3-nemotron-super-49b-v1.5](https://build.nvidia.com/nvidia/llama-3_3-nemotron-super-49b-v1_5)
 - Document ingest and extraction - [Docling](https://github.com/DS4SD/docling)
-- Text-to-speech - [ElevenLabs](https://elevenlabs.io/)
+- Text-to-speech - [ElevenLabs](https://elevenlabs.io/) (default) or
+  [FlowSpeech](https://flowspeech.io/)
 - Redis - [Redis](https://redis.io/)
 - Storage - [MinIO](https://minio.io/)
 
@@ -50,7 +51,8 @@ Below are the hardware requirements, these are dependent on how you choose to de
 - NVIDIA AI Enterprise developer licence required to local host NVIDIA NIM.
 - API catalog keys:
    - NVIDIA [API catalog](https://build.nvidia.com/) or [NGC](https://org.ngc.nvidia.com/setup/personal-keys)
-   - [ElevenLabs](https://elevenlabs.io/docs/api-reference/authentication)
+   - [ElevenLabs](https://elevenlabs.io/docs/api-reference/authentication) or a
+     FlowSpeech API key
 
 ## Quick Start Guide
 1. **Docker Compose**
@@ -80,7 +82,9 @@ NVIDIA Inference Microservices (NIM)
 
 IMPORTANT:  This will be used in the NVIDIA_API_KEY environment variable below.
 
-[ElevenLabs](https://elevenlabs.io/docs/api-reference/authentication)
+[ElevenLabs](https://elevenlabs.io/docs/api-reference/authentication) is the
+default TTS provider. To use FlowSpeech instead, create a FlowSpeech API key and
+set `TTS_PROVIDER=flowspeech` as shown below.
 
 3. **Clone the repo**
 
@@ -97,6 +101,17 @@ IMPORTANT:  This will be used in the NVIDIA_API_KEY environment variable below.
    echo "MAX_CONCURRENT_REQUESTS=1" >> .env
    ```
 > **Note:** the ElevenLabs API key can handle concurrent requests. For local development, set MAX_CONCURRENT_REQUESTS=1 to avoid rate-limiting issues.
+
+   To use FlowSpeech, replace the ElevenLabs key with these settings. `Kore`
+   and `Puck` are the default podcast voices and can be overridden with
+   `DEFAULT_VOICE_1` and `DEFAULT_VOICE_2`.
+
+   ```bash
+   echo "TTS_PROVIDER=flowspeech" >> .env
+   echo "FLOWSPEECH_API_KEY=your_key" >> .env
+   echo "DEFAULT_VOICE_1=Kore" >> .env
+   echo "DEFAULT_VOICE_2=Puck" >> .env
+   ```
 
 5. **Install dependencies**
 

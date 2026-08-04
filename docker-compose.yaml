@@ -87,7 +87,12 @@ services:
       - "8889:8889"
     environment:
       - MAX_CONCURRENT_REQUESTS=${MAX_CONCURRENT_REQUESTS}
+      - TTS_PROVIDER=${TTS_PROVIDER:-elevenlabs}
       - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - FLOWSPEECH_API_KEY=${FLOWSPEECH_API_KEY}
+      - FLOWSPEECH_BASE_URL=${FLOWSPEECH_BASE_URL:-https://flowspeech.io}
+      - DEFAULT_VOICE_1=${DEFAULT_VOICE_1}
+      - DEFAULT_VOICE_2=${DEFAULT_VOICE_2}
       - REDIS_URL=redis://redis:6379
     depends_on:
       - redis
