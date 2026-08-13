@@ -3,6 +3,7 @@
 This module provides functionality to retrieve and display a list of all saved podcasts
 from the PDF-to-Podcast API service, including their metadata and transcription parameters.
 """
+import os
 
 import requests
 import ujson as json
@@ -38,8 +39,10 @@ def list_saved_podcasts():
         API_SERVICE_URL: Base URL of the API service (default: http://localhost:8002)
     """
     try:
-        print("\nAttempting to connect to API...")
-        response = requests.get("http://localhost:8002/saved_podcasts")
+        base_url = os.getenv("API_SERVICE_URL", "http://localhost:8002").rstrip("/")
+        endpoint = f"{base_url}/saved_podcasts"
+        print(f"\nAttempting to connect to API at {base_url}...")
+        response = requests.get(endpoint)
         response.raise_for_status()
 
         data = response.json()
