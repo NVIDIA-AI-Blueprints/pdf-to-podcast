@@ -768,14 +768,20 @@ async def get_saved_podcast_agent_workflow(
 
 @app.get("/saved_podcast/{job_id}/pdf")
 async def get_saved_podcast_pdf(
-    job_id: str, userId: str = Query(..., description="KAS User ID")
+    job_id: str,
+    userId: str = Query(..., description="KAS User ID"),
+    idx: int = Query(0, description="Index of the uploaded PDF to retrieve"),
 ):
     """
     Get the original PDF file for a specific podcast.
     
+    Uploaded PDFs are stored as {job_id}_{idx}.pdf. The default idx=0 returns
+    the first uploaded PDF.
+    
     Args:
         job_id (str): Job identifier for the podcast
         userId (str): User identifier for authorization
+        idx (int): Index of the uploaded PDF to retrieve
         
     Returns:
         Response: PDF file response with appropriate headers
@@ -786,7 +792,8 @@ async def get_saved_podcast_pdf(
     with telemetry.tracer.start_as_current_span("api.saved_podcast.pdf") as span:
         try:
             span.set_attribute("job_id", job_id)
-            filename = f"{job_id}.pdf"
+            span.set_attribute("pdf_index", idx)
+            filename = f"{job_id}_{idx}.pdf"
             span.set_attribute("filename", filename)
             pdf_data = storage_manager.get_file(userId, job_id, filename)
 
@@ -799,9 +806,11 @@ async def get_saved_podcast_pdf(
             return Response(
                 content=pdf_data,
                 media_type="application/pdf",
-                headers={"Content-Disposition": f"attachment; filename={job_id}.pdf"},
+                headers={"Content-Disposition": f"attachment; filename={filename}"},
             )
 
+        except HTTPException:
+            raise
         except Exception as e:
             logger.error(f"Failed to get PDF for {job_id}: {str(e)}")
             span.set_status(StatusCode.ERROR, "failed to get PDF")
