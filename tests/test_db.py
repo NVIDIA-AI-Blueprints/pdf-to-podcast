@@ -126,7 +126,11 @@ class StorageManager:
         """
         try:
             object_name = f"{job_id}/{filename}"
-            result = self.client.get_object(self.bucket_name, object_name).read()
+            response = self.client.get_object(self.bucket_name, object_name)
+            try:
+                result = response.read()
+            finally:
+                response.close()
             print(
                 f"[{self.get_time()}] Retrieved audio for {job_id} from MinIO as {object_name}"
             )
@@ -208,6 +212,35 @@ def test_storage_manager():
         print(f"✗ Failed to clean up test data: {e}")
 
     print("\n=== Storage Manager Tests Completed ===")
+
+
+def test_get_audio_closes_response():
+    """Unit test verifying get_audio closes the MinIO response object.
+
+    MinIO get_object returns an HTTPResponse that must be closed to release
+    the underlying connection. This test ensures the response is closed after
+    reading to prevent connection leaks under load.
+    """
+    from unittest.mock import MagicMock, patch
+
+    mock_minio_instance = MagicMock()
+    mock_minio_instance.bucket_exists.return_value = True
+
+    with patch("tests.test_db.Minio", return_value=mock_minio_instance):
+        storage_manager = StorageManager()
+
+    mock_response = MagicMock()
+    mock_response.read.return_value = b"retrieved audio bytes"
+    mock_minio_instance.get_object.return_value = mock_response
+
+    result = storage_manager.get_audio("job-123", "audio.mp3")
+
+    assert result == b"retrieved audio bytes"
+    mock_minio_instance.get_object.assert_called_once_with(
+        storage_manager.bucket_name, "job-123/audio.mp3"
+    )
+    mock_response.read.assert_called_once()
+    mock_response.close.assert_called_once()
 
 
 if __name__ == "__main__":
