@@ -12,4 +12,6 @@ jinja2
 ruff
 ujson
 jupyterlab>3.0
-gradio
+# Pinned below 6.0: the frontend passes css/js to the Blocks constructor, which
+# Gradio 6 moved to launch() and which crashes there on this image's anyio.
+gradio==5.50.0
