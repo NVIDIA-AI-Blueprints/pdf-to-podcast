@@ -32,7 +32,7 @@ services:
       - app-network
 
   minio:
-    image: minio/minio:latest
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
     ports:
       - "9000:9000"
       - "9001:9001"
