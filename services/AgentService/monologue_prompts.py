@@ -45,7 +45,7 @@ Requirements for the analysis:
   - Use proper Unicode characters
 
 Format the analysis using markdown with clear headers and bullet points. Be focused and specific, 
-Condense the information into metrics easily digestible on a audiobook format without making it stat/number heavy, focus more on the company's growth areas and trends.
+Condense the information into metrics easily digestible on an audiobook format without making it stat/number heavy, focus more on the company's growth areas and trends.
 You are presenting to the board of directors. Speak in a way that is engaging and informative, but not too technical and speak in the first person.
 """
 
@@ -100,7 +100,7 @@ Outline:
 Available Source Documents:
 {% for doc in documents %}
 <document>
-<type>{"Target Document" if doc.type == "target" else "Context Document"}</type>
+<type>{{ "Target Document" if doc.type == "target" else "Context Document" }}</type>
 <path>{{doc.filename}}</path>
 <summary>
 {{doc.summary}}
