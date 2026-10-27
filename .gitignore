@@ -1,4 +1,7 @@
 .pytest_cache
+.test-tmp/
+services/TTSService/.test-tmp/
+services/TTSService/dist/
 __pycache__
 tmp
 .venv

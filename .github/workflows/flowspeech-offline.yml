@@ -1,0 +1,32 @@
+name: FlowSpeech offline v1
+on:
+  push:
+    paths:
+      - "services/TTSService/**"
+      - ".github/workflows/flowspeech-offline.yml"
+  pull_request:
+    paths:
+      - "services/TTSService/**"
+      - ".github/workflows/flowspeech-offline.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: >-
+          python -m pip install --only-binary=:all: httpx==0.28.1 pytest==8.4.2 pydantic==2.12.3 ruff==0.14.2
+      - run: python -m pytest services/TTSService/tests_flowspeech --confcutdir=services/TTSService/tests_flowspeech -q
+        env:
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+      - run: python services/TTSService/verify_bundle.py
+      - run: ruff check services/TTSService/flowspeech.py services/TTSService/flowspeech_v1.py services/TTSService/main.py services/TTSService/test_flowspeech.py services/TTSService/tests_flowspeech services/TTSService/verify_bundle.py
+      - run: ruff format --check services/TTSService/flowspeech.py services/TTSService/flowspeech_v1.py services/TTSService/main.py services/TTSService/test_flowspeech.py services/TTSService/tests_flowspeech services/TTSService/verify_bundle.py
