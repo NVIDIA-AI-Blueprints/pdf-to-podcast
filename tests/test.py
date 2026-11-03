@@ -29,10 +29,10 @@ SPEAKER_NAMES = ["Bob", "Kate", "Alex", "Sarah", "Mike"]
 
 class StatusMonitor:
     """Monitor WebSocket status updates for PDF-to-Podcast jobs.
-    
+
     This class handles WebSocket connections to track the status of PDF processing,
     agent processing, and text-to-speech conversion for a specific job.
-    
+
     Attributes:
         base_url (str): Base URL of the API service
         job_id (str): Unique identifier for the job being monitored
@@ -42,7 +42,7 @@ class StatusMonitor:
 
     def __init__(self, base_url, job_id):
         """Initialize the status monitor.
-        
+
         Args:
             base_url (str): Base URL of the API service
             job_id (str): Unique identifier for the job to monitor
@@ -71,7 +71,7 @@ class StatusMonitor:
 
     def get_time(self):
         """Get current time formatted as string.
-        
+
         Returns:
             str: Current time in HH:MM:SS format
         """
@@ -148,7 +148,7 @@ class StatusMonitor:
 
     async def _handle_message(self, message):
         """Handle incoming WebSocket messages.
-        
+
         Args:
             message (str): JSON message from WebSocket
         """
@@ -183,16 +183,16 @@ class StatusMonitor:
 
 def get_output_with_retry(base_url: str, job_id: str, max_retries=5, retry_delay=1):
     """Retry getting output with exponential backoff.
-    
+
     Args:
         base_url (str): Base URL of the API service
         job_id (str): Job ID to get output for
         max_retries (int): Maximum number of retry attempts
         retry_delay (int): Initial delay between retries in seconds
-        
+
     Returns:
         bytes: Audio file content
-        
+
     Raises:
         TimeoutError: If maximum retries exceeded
     """
@@ -223,13 +223,13 @@ def get_output_with_retry(base_url: str, job_id: str, max_retries=5, retry_delay
 
 def test_saved_podcasts(base_url: str, job_id: str, max_retries=5, retry_delay=5):
     """Test the saved podcasts endpoints with retry logic.
-    
+
     Args:
         base_url (str): Base URL of the API service
         job_id (str): Job ID to test
         max_retries (int): Maximum number of retry attempts
         retry_delay (int): Initial delay between retries in seconds
-        
+
     Raises:
         AssertionError: If any endpoint tests fail
     """
@@ -243,9 +243,9 @@ def test_saved_podcasts(base_url: str, job_id: str, max_retries=5, retry_delay=5
         response = requests.get(
             f"{base_url}/saved_podcasts", params={"userId": TEST_USER_ID}
         )
-        assert (
-            response.status_code == 200
-        ), f"Failed to get saved podcasts: {response.text}"
+        assert response.status_code == 200, (
+            f"Failed to get saved podcasts: {response.text}"
+        )
         podcasts = response.json()["podcasts"]
         print(f"Found {len(podcasts)} saved podcasts")
 
@@ -262,16 +262,18 @@ def test_saved_podcasts(base_url: str, job_id: str, max_retries=5, retry_delay=5
             time.sleep(wait_time)
             continue
         else:
-            assert False, f"Recently created job_id {job_id} not found in saved podcasts after {max_retries} attempts"
+            assert False, (
+                f"Recently created job_id {job_id} not found in saved podcasts after {max_retries} attempts"
+            )
 
     # Test 2: Get specific podcast metadata
     print("\nTesting individual podcast metadata endpoint...")
     response = requests.get(
         f"{base_url}/saved_podcast/{job_id}/metadata", params={"userId": TEST_USER_ID}
     )
-    assert (
-        response.status_code == 200
-    ), f"Failed to get podcast metadata: {response.text}"
+    assert response.status_code == 200, (
+        f"Failed to get podcast metadata: {response.text}"
+    )
     metadata = response.json()
     print(f"Retrieved metadata for podcast: {metadata.get('filename', 'unknown')}")
     print(f"Metadata: {json.dumps(metadata, indent=2)}")
@@ -330,14 +332,14 @@ def test_api(
     vdb: bool = False,
 ):
     """Test the PDF-to-Podcast API functionality.
-    
+
     Args:
         base_url (str): Base URL of the API service
         target_files (List[str]): List of target PDF files to process
         context_files (List[str]): List of context PDF files
         monologue (bool): Whether to generate monologue instead of dialogue
         vdb (bool): Whether to enable vector database processing
-        
+
     Raises:
         AssertionError: If any API tests fail
         Exception: For other errors during testing
@@ -421,9 +423,9 @@ def test_api(
     try:
         response = requests.post(process_url, files=form_data)
 
-        assert (
-            response.status_code == 202
-        ), f"Expected status code 202, but got {response.status_code}. Response: {response.text}"
+        assert response.status_code == 202, (
+            f"Expected status code 202, but got {response.status_code}. Response: {response.text}"
+        )
         job_data = response.json()
         assert "job_id" in job_data, "Response missing job_id"
         job_id = job_data["job_id"]
@@ -468,9 +470,9 @@ def test_api(
                     f"{base_url}/query_vector_db",
                     json={"query": test_query, "k": 3, "job_id": job_id},
                 )
-                assert (
-                    rag_response.status_code == 200
-                ), f"RAG endpoint failed: {rag_response.text}"
+                assert rag_response.status_code == 200, (
+                    f"RAG endpoint failed: {rag_response.text}"
+                )
                 rag_results = rag_response.json()
                 print(f"RAG Query: '{test_query}'")
                 print(f"RAG Results: {json.dumps(rag_results, indent=2)}")

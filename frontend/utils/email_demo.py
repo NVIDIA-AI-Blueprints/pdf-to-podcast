@@ -27,8 +27,6 @@ from typing import List
 
 import smtplib
 from email.message import EmailMessage
-from email.mime.base import MIMEBase
-from email import encoders
 
 # Add global TEST_USER_ID
 TEST_USER_ID = "test-userid"
@@ -194,9 +192,9 @@ def test_saved_podcasts(base_url: str, job_id: str, max_retries=5, retry_delay=5
         response = requests.get(
             f"{base_url}/saved_podcasts", params={"userId": TEST_USER_ID}
         )
-        assert (
-            response.status_code == 200
-        ), f"Failed to get saved podcasts: {response.text}"
+        assert response.status_code == 200, (
+            f"Failed to get saved podcasts: {response.text}"
+        )
         podcasts = response.json()["podcasts"]
         print(f"Found {len(podcasts)} saved podcasts")
 
@@ -213,16 +211,18 @@ def test_saved_podcasts(base_url: str, job_id: str, max_retries=5, retry_delay=5
             time.sleep(wait_time)
             continue
         else:
-            assert False, f"Recently created job_id {job_id} not found in saved podcasts after {max_retries} attempts"
+            assert False, (
+                f"Recently created job_id {job_id} not found in saved podcasts after {max_retries} attempts"
+            )
 
     # Test 2: Get specific podcast metadata
     print("\nTesting individual podcast metadata endpoint...")
     response = requests.get(
         f"{base_url}/saved_podcast/{job_id}/metadata", params={"userId": TEST_USER_ID}
     )
-    assert (
-        response.status_code == 200
-    ), f"Failed to get podcast metadata: {response.text}"
+    assert response.status_code == 200, (
+        f"Failed to get podcast metadata: {response.text}"
+    )
     metadata = response.json()
     print(f"Retrieved metadata for podcast: {metadata.get('filename', 'unknown')}")
     print(f"Metadata: {json.dumps(metadata, indent=2)}")
@@ -301,7 +301,7 @@ def test_api(
         for pdf_file in context_files:
             if not os.path.isabs(pdf_file):
                 pdf_file = os.path.join(samples_dir, pdf_file)
-    
+
             with open(pdf_file, "rb") as f:
                 content = f.read()
                 form_data.append(
@@ -317,9 +317,9 @@ def test_api(
     try:
         response = requests.post(process_url, files=form_data)
 
-        assert (
-            response.status_code == 202
-        ), f"Expected status code 202, but got {response.status_code}. Response: {response.text}"
+        assert response.status_code == 202, (
+            f"Expected status code 202, but got {response.status_code}. Response: {response.text}"
+        )
         job_data = response.json()
         assert "job_id" in job_data, "Response missing job_id"
         job_id = job_data["job_id"]
@@ -344,7 +344,10 @@ def test_api(
             audio_content = get_output_with_retry(base_url, job_id)
 
             # Save the audio file
-            output_path = os.path.join("/project/frontend/demo_outputs/", str(email[0]).split('@')[0] + "-output.mp3")
+            output_path = os.path.join(
+                "/project/frontend/demo_outputs/",
+                str(email[0]).split("@")[0] + "-output.mp3",
+            )
             with open(output_path, "wb") as f:
                 f.write(audio_content)
             print(
@@ -362,9 +365,9 @@ def test_api(
                     f"{base_url}/query_vector_db",
                     json={"query": test_query, "k": 3, "job_id": job_id},
                 )
-                assert (
-                    rag_response.status_code == 200
-                ), f"RAG endpoint failed: {rag_response.text}"
+                assert rag_response.status_code == 200, (
+                    f"RAG endpoint failed: {rag_response.text}"
+                )
                 rag_results = rag_response.json()
                 print(f"RAG Query: '{test_query}'")
                 print(f"RAG Results: {json.dumps(rag_results, indent=2)}")
@@ -377,29 +380,34 @@ def test_api(
         print(f"Error during PDF submission: {e}")
         raise
 
+
 def send_file_via_email(file_location, sender_email, recipient_email):
     # Email configuration
     print("Configuring Sender Details")
     sender_email = sender_email
-    email_password = os.environ['SENDER_EMAIL_PASSWORD']
+    email_password = os.environ["SENDER_EMAIL_PASSWORD"]
     smtp_server = "smtp.gmail.com"
     smtp_port = 587
 
     # Create email message
     print("Configuring Email Message")
     msg = EmailMessage()
-    msg['Subject'] = '[Auto-generated] Your podcast is here!'
-    msg['From'] = sender_email
-    msg['To'] = recipient_email
-    msg.set_content('Your generated podcast is here! Please find the attached file.\n\nThank you for using the AI Research Assistant Blueprint powered by NVIDIA AI Workbench!')
+    msg["Subject"] = "[Auto-generated] Your podcast is here!"
+    msg["From"] = sender_email
+    msg["To"] = recipient_email
+    msg.set_content(
+        "Your generated podcast is here! Please find the attached file.\n\nThank you for using the AI Research Assistant Blueprint powered by NVIDIA AI Workbench!"
+    )
 
     # Add file attachment
     print("Adding podcast as attachment")
-    with open(file_location, 'rb') as file:
+    with open(file_location, "rb") as file:
         file_data = file.read()
         file_name = os.path.basename(file_location)
-        
-    msg.add_attachment(file_data, maintype='application', subtype='octet-stream', filename=file_name)
+
+    msg.add_attachment(
+        file_data, maintype="application", subtype="octet-stream", filename=file_name
+    )
 
     # Send email
     print("Attempting to send email.")
@@ -411,6 +419,7 @@ def send_file_via_email(file_location, sender_email, recipient_email):
         print(f"File '{file_name}' sent successfully to {recipient_email}")
     except Exception as e:
         print(f"An error occurred: {str(e)}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -499,4 +508,10 @@ if __name__ == "__main__":
         args.vdb,
     )
 
-    send_file_via_email("/project/frontend/demo_outputs/" + str(args.recipient_email[0]).split('@')[0] + "-output.mp3", str(args.sender_email[0]), str(args.recipient_email[0]))
+    send_file_via_email(
+        "/project/frontend/demo_outputs/"
+        + str(args.recipient_email[0]).split("@")[0]
+        + "-output.mp3",
+        str(args.sender_email[0]),
+        str(args.recipient_email[0]),
+    )

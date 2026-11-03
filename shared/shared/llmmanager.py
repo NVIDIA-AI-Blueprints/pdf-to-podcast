@@ -15,21 +15,22 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ModelConfig:
     """Configuration for a specific LLM model.
-    
+
     Attributes:
         name (str): Name/identifier of the model
         api_base (str): Base URL for the model's API endpoint
     """
+
     name: str
     api_base: str
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "ModelConfig":
         """Create a ModelConfig instance from a dictionary.
-        
+
         Args:
             data (Dict[str, Any]): Dictionary containing model configuration
-            
+
         Returns:
             ModelConfig: New ModelConfig instance
         """
@@ -106,10 +107,10 @@ class LLMManager:
         self, config_path: Optional[str]
     ) -> Dict[str, ModelConfig]:
         """Load model configurations from JSON file if provided, otherwise use defaults.
-        
+
         Args:
             config_path (Optional[str]): Path to configuration JSON file
-            
+
         Returns:
             Dict[str, ModelConfig]: Dictionary mapping model keys to configurations
         """
@@ -132,13 +133,13 @@ class LLMManager:
 
     def get_llm(self, model_key: str) -> ChatNVIDIA:
         """Get or create a ChatNVIDIA model for the specified model key.
-        
+
         Args:
             model_key (str): Key identifying which model configuration to use
-            
+
         Returns:
             ChatNVIDIA: Initialized ChatNVIDIA instance
-            
+
         Raises:
             ValueError: If model_key is not found in configurations
         """
@@ -163,17 +164,17 @@ class LLMManager:
         retries: int = 5,
     ) -> Union[AIMessage, Dict[str, Any]]:
         """Send a synchronous query to the specified model.
-        
+
         Args:
             model_key (str): Key identifying which model to use
             messages (List[Dict[str, str]]): List of message dictionaries
             query_name (str): Name of query for telemetry
             json_schema (Optional[Dict]): Schema for structured output
             retries (int): Number of retry attempts
-            
+
         Returns:
             Union[AIMessage, Dict[str, Any]]: Model response
-            
+
         Raises:
             Exception: If query fails after retries
         """
@@ -210,17 +211,17 @@ class LLMManager:
         retries: int = 5,
     ) -> Union[AIMessage, Dict[str, Any]]:
         """Send an asynchronous query to the specified model.
-        
+
         Args:
             model_key (str): Key identifying which model to use
             messages (List[Dict[str, str]]): List of message dictionaries
             query_name (str): Name of query for telemetry
             json_schema (Optional[Dict]): Schema for structured output
             retries (int): Number of retry attempts
-            
+
         Returns:
             Union[AIMessage, Dict[str, Any]]: Model response
-            
+
         Raises:
             Exception: If query fails after retries
         """
@@ -257,17 +258,17 @@ class LLMManager:
         retries: int = 5,
     ) -> Union[str, Dict[str, Any]]:
         """Send a synchronous streaming query to the specified model.
-        
+
         Args:
             model_key (str): Key identifying which model to use
             messages (List[Dict[str, str]]): List of message dictionaries
             query_name (str): Name of query for telemetry
             json_schema (Optional[Dict]): Schema for structured output
             retries (int): Number of retry attempts
-            
+
         Returns:
             Union[str, Dict[str, Any]]: Final chunk from model stream
-            
+
         Raises:
             Exception: If streaming query fails after retries
         """
@@ -313,17 +314,17 @@ class LLMManager:
         retries: int = 5,
     ) -> Union[str, Dict[str, Any]]:
         """Send an asynchronous streaming query to the specified model.
-        
+
         Args:
             model_key (str): Key identifying which model to use
             messages (List[Dict[str, str]]): List of message dictionaries
             query_name (str): Name of query for telemetry
             json_schema (Optional[Dict]): Schema for structured output
             retries (int): Number of retry attempts
-            
+
         Returns:
             Union[str, Dict[str, Any]]: Final chunk from model stream
-            
+
         Raises:
             Exception: If streaming query fails after retries
         """

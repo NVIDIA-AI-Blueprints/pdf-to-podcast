@@ -180,11 +180,11 @@ async def convert_pdfs(
                         temp_file.write(content)
                         temp_files.append(temp_file.name)
                         logger.debug(
-                            f"Created temp file {temp_file.name} for PDF {i+1}/{len(contents)}"
+                            f"Created temp file {temp_file.name} for PDF {i + 1}/{len(contents)}"
                         )
                 except Exception as e:
                     logger.error(
-                        f"Failed to create temporary file for PDF {i+1}: {str(e)}"
+                        f"Failed to create temporary file for PDF {i + 1}: {str(e)}"
                     )
                     raise
 

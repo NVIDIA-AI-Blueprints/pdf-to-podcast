@@ -63,7 +63,7 @@ storage_manager = StorageManager(telemetry=telemetry)
 async def process_transcription(job_id: str, request: TranscriptionRequest):
     """
     Main processing function for transcription requests.
-    
+
     Handles both monologue and dialogue podcast generation workflows by coordinating
     multiple steps including PDF summarization, outline generation, and conversation creation.
 
@@ -239,7 +239,7 @@ async def process_transcription(job_id: str, request: TranscriptionRequest):
 def transcribe(request: TranscriptionRequest, background_tasks: BackgroundTasks):
     """
     Endpoint to start a new transcription job.
-    
+
     Accepts a transcription request and starts an asynchronous job to process it.
     The job runs in the background and its status can be checked using the /status endpoint.
 
@@ -270,7 +270,7 @@ def get_status(job_id: str):
             - status: Current job status (PENDING, PROCESSING, COMPLETED, FAILED)
             - message: Status message or error details
             - progress: Optional progress information
-            
+
     Raises:
         HTTPException: If job is not found
     """
