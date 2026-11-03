@@ -29,9 +29,7 @@ telemetry.initialize(config, app)
 job_manager = JobStatusManager(ServiceType.PDF, telemetry=telemetry)
 
 # Configuration
-MODEL_API_URL = os.getenv(
-    "MODEL_API_URL", "https://nv-ingest-rest-endpoint.brevlab.com/v1"
-)
+MODEL_API_URL = os.getenv("MODEL_API_URL", "http://localhost:8004")
 DEFAULT_TIMEOUT = 600  # seconds
 
 

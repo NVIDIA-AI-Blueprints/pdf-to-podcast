@@ -97,7 +97,9 @@ MP3_CACHE_TTL = 60 * 60 * 4  # 4 hours
 
 # NV-Ingest
 DEFAULT_TIMEOUT = 600  # seconds
-NV_INGEST_RETRIEVE_URL = "https://nv-ingest-rest-endpoint.brevlab.com/v1"
+NV_INGEST_RETRIEVE_URL = os.getenv(
+    "NV_INGEST_RETRIEVE_URL", "https://nv-ingest-rest-endpoint.brevlab.com/v1"
+)
 
 # CORS setup
 CORS_ORIGINS = os.getenv(
