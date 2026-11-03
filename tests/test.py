@@ -54,6 +54,8 @@ class StatusMonitor:
         self.services = {"pdf", "agent", "tts"}
         self.last_statuses = {service: None for service in self.services}
         self.tts_completed = Event()
+        self.done = Event()
+        self.error = None
         self.websocket = None
         self.reconnect_delay = 1.0
         self.max_reconnect_delay = 30.0
@@ -164,10 +166,13 @@ class StatusMonitor:
 
                     if status == "failed":
                         print(f"[{self.get_time()}] Job failed in {service}: {msg}")
+                        self.error = f"Job failed in {service}: {msg}"
+                        self.done.set()
                         self.stop_event.set()
 
                     if service == "tts" and status == "completed":
                         self.tts_completed.set()
+                        self.done.set()
                         self.stop_event.set()
 
         except json.JSONDecodeError:
@@ -429,10 +434,12 @@ def test_api(
         monitor.start()
 
         try:
-            # Wait for TTS completion or timeout
+            # Wait for TTS completion, a failed service, or timeout
             max_wait = 40 * 60
-            if not monitor.tts_completed.wait(timeout=max_wait):
+            if not monitor.done.wait(timeout=max_wait):
                 raise TimeoutError(f"Test timed out after {max_wait} seconds")
+            if monitor.error:
+                raise RuntimeError(monitor.error)
 
             # If we get here, TTS completed successfully
             print(
