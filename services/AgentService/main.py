@@ -83,7 +83,7 @@ async def process_transcription(job_id: str, request: TranscriptionRequest):
         try:
             # Initialize LLM manager and prompt tracker
             llm_manager = LLMManager(
-                api_key=os.getenv("NVIDIA_API_KEY"),
+                api_key=os.getenv("NVIDIA_API_KEY", "").strip() or None,
                 telemetry=telemetry,
                 config_path=os.getenv("MODEL_CONFIG_PATH"),
             )
