@@ -11,31 +11,52 @@ concurrency:
 jobs:
   e2e-test:
     runs-on: ubuntu-latest
+    env:
+      # Secrets are not passed to pull requests from forks
+      HAS_SECRETS: ${{ secrets.ELEVENLABS_API_KEY != '' && secrets.NVIDIA_API_KEY != '' }}
 
     steps:
       - uses: actions/checkout@v4
 
+      - name: Skip without API keys
+        if: env.HAS_SECRETS != 'true'
+        run: echo "::notice::ELEVENLABS_API_KEY / NVIDIA_API_KEY not available (fork PR?), skipping E2E tests"
+
       - name: Create .env file
+        if: env.HAS_SECRETS == 'true'
         run: |
           echo "ELEVENLABS_API_KEY=${{ secrets.ELEVENLABS_API_KEY }}" > .env
           echo "NVIDIA_API_KEY=${{ secrets.NVIDIA_API_KEY }}" >> .env
           echo "MAX_CONCURRENT_REQUESTS=10" >> .env
 
       - name: Start services in detached mode
+        if: env.HAS_SECRETS == 'true'
         run: make ci DETACH=1
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        if: env.HAS_SECRETS == 'true'
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
       - name: Install test dependencies
+        if: env.HAS_SECRETS == 'true'
         run: |
           python -m pip install --upgrade pip
           pip install -r tests/requirements-test.txt  # Make sure this file exists with your test dependencies
 
       - name: Run monologue E2E tests
+        if: env.HAS_SECRETS == 'true'
         run: python tests/test.py --monologue --target bofa-context.pdf --context citi-context.pdf
 
       - name: Run podcast E2E tests
+        if: env.HAS_SECRETS == 'true'
         run: python tests/test.py --target bofa-context.pdf --context citi-context.pdf
+
+      - name: Container logs (on failure)
+        if: failure() && env.HAS_SECRETS == 'true'
+        run: docker compose logs --no-color --tail 300
+
+      - name: Stop services
+        if: always() && env.HAS_SECRETS == 'true'
+        run: docker compose down -v
