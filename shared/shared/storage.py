@@ -226,9 +226,14 @@ class StorageManager:
                 for obj in objects:
                     if obj.object_name.endswith(".mp3"):
                         span.set_attribute("audio_file", obj.object_name)
-                        audio_data = self.client.get_object(
+                        response = self.client.get_object(
                             self.bucket_name, obj.object_name
-                        ).read()
+                        )
+                        try:
+                            audio_data = response.read()
+                        finally:
+                            response.close()
+                            response.release_conn()
                         return base64.b64encode(audio_data).decode("utf-8")
 
                 return None
@@ -263,8 +268,12 @@ class StorageManager:
                 object_name = self._get_object_path(user_id, job_id, filename)
 
                 try:
-                    data = self.client.get_object(self.bucket_name, object_name).read()
-                    return data
+                    response = self.client.get_object(self.bucket_name, object_name)
+                    try:
+                        return response.read()
+                    finally:
+                        response.close()
+                        response.release_conn()
                 except S3Error as e:
                     span.set_attribute("error", str(e))
                     if e.code == "NoSuchKey":
