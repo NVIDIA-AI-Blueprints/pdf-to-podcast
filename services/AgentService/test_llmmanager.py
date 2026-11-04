@@ -32,7 +32,7 @@ mock_telemetry.initialize(mock_config, mock_app)
 async def test_basic_queries():
     """
     Test both synchronous and asynchronous basic queries.
-    
+
     Tests the basic query functionality of LLMManager by making both sync
     and async requests with simple prompts. Verifies that both methods
     return expected responses.
@@ -45,7 +45,7 @@ async def test_basic_queries():
 
     Returns:
         None
-    
+
     Raises:
         Exception: If either query fails or returns unexpected response
     """
@@ -85,7 +85,7 @@ async def test_basic_queries():
 async def test_parallel_processing():
     """
     Test processing multiple queries in parallel.
-    
+
     Demonstrates the ability to process multiple queries concurrently using
     asyncio.gather(). Sends three different programming language queries
     simultaneously and collects their responses.
@@ -139,7 +139,7 @@ async def test_parallel_processing():
 async def test_json_schema():
     """
     Test JSON schema structured output.
-    
+
     Verifies that the LLMManager can generate responses conforming to a
     specified JSON schema. Uses a sample schema for person details including
     name, age, occupation, and hobbies.
@@ -187,7 +187,7 @@ async def test_json_schema():
 async def test_streaming():
     """
     Test both synchronous and asynchronous streaming.
-    
+
     Tests the streaming capabilities of LLMManager using both sync and async
     methods. Verifies that streaming responses are received correctly for
     simple counting and listing tasks.
@@ -240,7 +240,7 @@ async def test_streaming():
 async def test_json_streaming():
     """
     Test JSON schema structured output with streaming.
-    
+
     Tests the combination of JSON schema validation and streaming responses.
     Uses a simple story summary schema to verify that streamed responses
     conform to the specified structure.
@@ -307,7 +307,7 @@ async def test_json_streaming():
 async def main_test():
     """
     Run all tests sequentially.
-    
+
     Main test runner that executes all test functions in sequence.
     Currently configured to run only streaming tests, with other tests
     commented out for focused testing.

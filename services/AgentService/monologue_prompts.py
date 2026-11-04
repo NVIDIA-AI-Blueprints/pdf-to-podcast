@@ -189,7 +189,7 @@ TEMPLATES: Dict[str, jinja2.Template] = {
 class FinancialSummaryPrompts:
     """
     A class providing access to financial summary prompt templates.
-    
+
     This class serves as an interface to access and render various prompt templates
     used in the monologue generation process. Templates are accessed either through
     attribute access or the get_template class method.

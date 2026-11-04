@@ -77,6 +77,9 @@ all-services: check_env create-minio-data-dir
 		docker compose -f docker-compose.yaml --env-file .env up --build; \
 	fi
 
+# Target used by the PR test workflow
+ci: all-services
+
 # Clean up containers and volumes
 clean:
 	docker compose -f docker-compose.yaml down -v
@@ -89,4 +92,4 @@ format:
 
 ruff: lint format
 
-.PHONY: check_env dev clean ruff prod version-bump version-bump-major uv model-prod model-dev all-services create-minio-data-dir
+.PHONY: check_env ci dev clean ruff prod version-bump version-bump-major uv model-prod model-dev all-services create-minio-data-dir

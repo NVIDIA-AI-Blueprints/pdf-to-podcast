@@ -13,14 +13,14 @@ from datetime import datetime
 
 def test(base_url: str):
     """Test invalid file type and parameter handling.
-    
+
     Tests two scenarios:
     1. Submitting a .txt file instead of PDF
     2. Submitting invalid transcription parameters
-    
+
     Args:
         base_url (str): Base URL of the API service
-    
+
     Raises:
         AssertionError: If response status codes don't match expected 400
     """
@@ -42,9 +42,9 @@ def test(base_url: str):
 
     response = test_api(base_url, "PNP_Proof.txt", "text/plain", transcription_params)
 
-    assert (
-        response.status_code == 400
-    ), f"Expected status code 400, but got {response.status_code}"
+    assert response.status_code == 400, (
+        f"Expected status code 400, but got {response.status_code}"
+    )
 
     transcription_params = {
         "test": "test",
@@ -53,9 +53,9 @@ def test(base_url: str):
         base_url, "PNP_Proof.pdf", "application/pdf", transcription_params
     )
 
-    assert (
-        response.status_code == 400
-    ), f"Expected status code 400, but got {response.status_code}"
+    assert response.status_code == 400, (
+        f"Expected status code 400, but got {response.status_code}"
+    )
 
 
 def test_api(
@@ -90,9 +90,9 @@ def test_api(
     sample_pdf_path = os.path.join(samples_dir, file_name)
 
     # Ensure the sample PDF file exists
-    assert os.path.exists(
-        sample_pdf_path
-    ), f"Sample PDF file not found at {sample_pdf_path}"
+    assert os.path.exists(sample_pdf_path), (
+        f"Sample PDF file not found at {sample_pdf_path}"
+    )
 
     # Step 1: Submit the PDF file and get job ID
     print(f"\n[{datetime.now().strftime('%H:%M:%S')}] Submitting PDF for processing...")

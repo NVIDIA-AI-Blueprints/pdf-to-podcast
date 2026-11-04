@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class OpenTelemetryConfig:
     """Configuration for OpenTelemetry setup.
-    
+
     Attributes:
         service_name (str): Name of the service to be used in traces
         otlp_endpoint (str): OTLP endpoint URL for sending traces. Defaults to "http://jaeger:4317"
@@ -42,7 +42,7 @@ class OpenTelemetryConfig:
 class OpenTelemetryInstrumentation:
     """
     Lightweight OpenTelemetry wrapper for easy instrumentation of FastAPI applications.
-    
+
     This class provides a simple interface to set up OpenTelemetry tracing with common
     instrumentations like Redis, requests, HTTPX, and urllib3. It handles the configuration
     of trace providers, processors, and exporters.
@@ -65,10 +65,10 @@ class OpenTelemetryInstrumentation:
     @property
     def tracer(self) -> trace.Tracer:
         """Get the configured tracer instance.
-        
+
         Returns:
             trace.Tracer: The configured OpenTelemetry tracer
-            
+
         Raises:
             RuntimeError: If initialize() hasn't been called yet
         """
@@ -100,7 +100,7 @@ class OpenTelemetryInstrumentation:
 
     def _setup_tracing(self) -> None:
         """Set up the OpenTelemetry tracer provider and processors.
-        
+
         Configures the trace provider with the service name resource and sets up
         batch processing of spans to the configured OTLP endpoint.
         """
@@ -118,10 +118,10 @@ class OpenTelemetryInstrumentation:
 
     def _instrument_app(self, app=None) -> None:
         """Instrument the FastAPI application and optional components.
-        
+
         Args:
             app: Optional FastAPI application instance to instrument
-            
+
         Enables instrumentation for FastAPI (if app provided) and optionally for
         Redis, requests, HTTPX, and urllib3 based on configuration.
         """

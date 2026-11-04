@@ -9,11 +9,11 @@ import threading
 class JobStatusManager:
     """
     Manages job status and results using Redis as a backend store.
-    
+
     This class provides methods to track job status, store results, and manage cleanup
-    of old jobs. It uses Redis hash sets for status storage and Redis pub/sub for 
+    of old jobs. It uses Redis hash sets for status storage and Redis pub/sub for
     real-time status updates.
-    
+
     Attributes:
         telemetry (OpenTelemetryInstrumentation): Telemetry instrumentation instance
         redis (redis.Redis): Redis client instance
@@ -29,7 +29,7 @@ class JobStatusManager:
     ):
         """
         Initialize the JobStatusManager.
-        
+
         Args:
             service_type (ServiceType): Type of service using this manager
             telemetry (OpenTelemetryInstrumentation): Telemetry instrumentation instance
@@ -43,7 +43,7 @@ class JobStatusManager:
     def create_job(self, job_id: str):
         """
         Create a new job with pending status.
-        
+
         Args:
             job_id (str): Unique identifier for the job
         """
@@ -68,7 +68,7 @@ class JobStatusManager:
     def update_status(self, job_id: str, status: str, message: str):
         """
         Update the status of an existing job.
-        
+
         Args:
             job_id (str): Job identifier
             status (str): New status value
@@ -95,7 +95,7 @@ class JobStatusManager:
     def set_result(self, job_id: str, result: bytes):
         """
         Store the result data for a job.
-        
+
         Args:
             job_id (str): Job identifier
             result (bytes): Result data to store
@@ -109,7 +109,7 @@ class JobStatusManager:
     def set_result_with_expiration(self, job_id: str, result: bytes, ex: int):
         """
         Store the result data with an expiration time.
-        
+
         Args:
             job_id (str): Job identifier
             result (bytes): Result data to store
@@ -126,10 +126,10 @@ class JobStatusManager:
     def get_result(self, job_id: str):
         """
         Retrieve the result data for a job.
-        
+
         Args:
             job_id (str): Job identifier
-            
+
         Returns:
             bytes: Result data if found, None otherwise
         """
@@ -143,13 +143,13 @@ class JobStatusManager:
     def get_status(self, job_id: str):
         """
         Get the current status of a job.
-        
+
         Args:
             job_id (str): Job identifier
-            
+
         Returns:
             dict: Job status information
-            
+
         Raises:
             ValueError: If job not found
         """
@@ -167,10 +167,10 @@ class JobStatusManager:
     def cleanup_old_jobs(self, max_age=3600):
         """
         Remove jobs older than the specified age.
-        
+
         Args:
             max_age (int, optional): Maximum age in seconds. Defaults to 3600.
-            
+
         Returns:
             int: Number of jobs removed
         """

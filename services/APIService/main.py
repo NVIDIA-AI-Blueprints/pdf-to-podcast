@@ -122,14 +122,14 @@ logger.info(f"CORS configured with allowed origins: {allowed_origins}")
 async def websocket_endpoint(websocket: WebSocket, job_id: str):
     """
     WebSocket endpoint for real-time job status updates.
-    
+
     Handles client connections and sends status updates for all services processing a job.
     Implements a ready-check protocol and maintains connection with periodic pings.
-    
+
     Args:
         websocket (WebSocket): The WebSocket connection instance
         job_id (str): Unique identifier for the job to track
-        
+
     Raises:
         WebSocketDisconnect: If the client disconnects
     """
@@ -201,15 +201,15 @@ def process_pdf_task(
 ):
     """
     Process PDF files through the conversion pipeline.
-    
+
     Coordinates the workflow between PDF Service, Agent Service, and TTS Service
     to convert PDFs into an audio podcast.
-    
+
     Args:
         job_id (str): Unique identifier for the job
         files_and_types (List[Tuple[bytes, str]]): List of tuples containing file content and type (target/context)
         transcription_params (TranscriptionParams): Parameters controlling the transcription process
-        
+
     Raises:
         Exception: If any service in the pipeline fails
     """
@@ -354,16 +354,16 @@ async def process_pdf(
 ):
     """
     Process uploaded PDF files and generate a podcast.
-    
+
     Args:
         background_tasks (BackgroundTasks): FastAPI background tasks handler
         target_files (Union[UploadFile, List[UploadFile]]): Primary PDF file(s) to process
         context_files (Union[UploadFile, List[UploadFile]], optional): Supporting PDF files
         transcription_params (str): JSON string containing transcription parameters
-        
+
     Returns:
         dict: Contains job_id for tracking the processing status
-        
+
     Raises:
         HTTPException: If file validation fails or parameters are invalid
     """
@@ -432,14 +432,14 @@ async def process_pdf(
 async def get_status(job_id: str, userId: str = Query(..., description="KAS User ID")):
     """
     Get aggregated status from all services for a specific job.
-    
+
     Args:
         job_id (str): Job identifier to check status for
         userId (str): User identifier for authorization
-        
+
     Returns:
         dict: Status information from all services
-        
+
     Raises:
         HTTPException: If job is not found
     """
@@ -468,14 +468,14 @@ async def get_status(job_id: str, userId: str = Query(..., description="KAS User
 async def get_output(job_id: str, userId: str = Query(..., description="KAS User ID")):
     """
     Get the final TTS output for a completed job.
-    
+
     Args:
         job_id (str): Job identifier to get output for
         userId (str): User identifier for authorization
-        
+
     Returns:
         Response: Audio file response with appropriate headers
-        
+
     Raises:
         HTTPException: If result is not found or TTS not completed
     """
@@ -515,9 +515,9 @@ async def get_output(job_id: str, userId: str = Query(..., description="KAS User
 async def cleanup_jobs():
     """
     Clean up old jobs across all services.
-    
+
     Removes job status and result data from Redis for all services.
-    
+
     Returns:
         dict: Number of jobs removed
     """
@@ -538,13 +538,13 @@ async def get_saved_podcasts(
 ):
     """
     Get a list of all saved podcasts from storage with their audio data.
-    
+
     Args:
         userId (str): User identifier to filter podcasts
-        
+
     Returns:
         Dict[str, List[SavedPodcast]]: List of saved podcasts metadata
-        
+
     Raises:
         HTTPException: If retrieval fails
     """
@@ -584,14 +584,14 @@ async def get_saved_podcast_metadata(
 ):
     """
     Get a specific saved podcast metadata without audio data.
-    
+
     Args:
         job_id (str): Job identifier for the podcast
         userId (str): User identifier for authorization
-        
+
     Returns:
         SavedPodcast: Podcast metadata
-        
+
     Raises:
         HTTPException: If podcast not found or retrieval fails
     """
@@ -629,14 +629,14 @@ async def get_saved_podcast(
 ):
     """
     Get a specific saved podcast with its audio data.
-    
+
     Args:
         job_id (str): Job identifier for the podcast
         userId (str): User identifier for authorization
-        
+
     Returns:
         SavedPodcastWithAudio: Podcast metadata and audio content
-        
+
     Raises:
         HTTPException: If podcast not found or retrieval fails
     """
@@ -686,14 +686,14 @@ async def get_saved_podcast_transcript(
 ):
     """
     Get a specific saved podcast transcript.
-    
+
     Args:
         job_id (str): Job identifier for the podcast
         userId (str): User identifier for authorization
-        
+
     Returns:
         Conversation: Podcast transcript data
-        
+
     Raises:
         HTTPException: If transcript not found or invalid format
     """
@@ -732,14 +732,14 @@ async def get_saved_podcast_agent_workflow(
 ):
     """
     Get a specific saved podcast agent workflow history.
-    
+
     Args:
         job_id (str): Job identifier for the podcast
         userId (str): User identifier for authorization
-        
+
     Returns:
         PromptTracker: Agent workflow history data
-        
+
     Raises:
         HTTPException: If history not found or retrieval fails
     """
@@ -772,14 +772,14 @@ async def get_saved_podcast_pdf(
 ):
     """
     Get the original PDF file for a specific podcast.
-    
+
     Args:
         job_id (str): Job identifier for the podcast
         userId (str): User identifier for authorization
-        
+
     Returns:
         Response: PDF file response with appropriate headers
-        
+
     Raises:
         HTTPException: If PDF not found or retrieval fails
     """

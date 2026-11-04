@@ -15,18 +15,15 @@
 
 import gradio as gr
 import requests
-import tempfile
 import os
-import base64
 import json
 import sys
-import ast
 import re
 
 import uuid
 from frontend.utils import email_demo, logger
 
-BP_INFO_MARKDOWN="""
+BP_INFO_MARKDOWN = """
 ### Key Features
 
 PDF to Markdown Service
@@ -43,7 +40,7 @@ Text-to-Speech (TTS) Service
 
 """
 
-CONFIG_INSTRUCTIONS_MARKDOWN="""
+CONFIG_INSTRUCTIONS_MARKDOWN = """
 Use this editor to configure your long-reasoning agent. 
 
 **Note:** The default configuration is for Build endpoints on the NVIDIA API Catalog. To use a local agent, ensure the compose services are running with the ``local`` profile. 
@@ -106,21 +103,34 @@ with gr.Blocks(css=css, js=js_func) as demo:
     gr.Markdown("# NVIDIA AI Blueprint: PDF-to-Podcast")
 
     with gr.Row():
-        with gr.Column(scale=1): 
-
+        with gr.Column(scale=1):
             with gr.Tab("Full End to End Flow"):
-                gr.Markdown("### Upload at least one PDF file for a file to target or as context. ")
+                gr.Markdown(
+                    "### Upload at least one PDF file for a file to target or as context. "
+                )
                 with gr.Row():
-                    target_files = gr.File(label="Upload target PDF", file_types=[".pdf"])
-                    context_files = gr.File(label="Upload context PDF", file_types=[".pdf"], file_count="multiple")
+                    target_files = gr.File(
+                        label="Upload target PDF", file_types=[".pdf"]
+                    )
+                    context_files = gr.File(
+                        label="Upload context PDF",
+                        file_types=[".pdf"],
+                        file_count="multiple",
+                    )
                 with gr.Row():
                     settings = gr.CheckboxGroup(
-                        ["Monologue Only"], label="Additional Settings", info="Customize your podcast here"
-                    )   
+                        ["Monologue Only"],
+                        label="Additional Settings",
+                        info="Customize your podcast here",
+                    )
                 with gr.Accordion("Optional: Email Details", open=False):
-                    gr.Markdown("Enter a recipient email here to receive your generated podcast in your inbox! \n\n**Note**: Ensure `SENDER_EMAIL` and `SENDER_EMAIL_PASSWORD` are configured in AI Workbench")
-                    recipient_email = gr.Textbox(label="Recipient email", placeholder="Enter email here")
-                                 
+                    gr.Markdown(
+                        "Enter a recipient email here to receive your generated podcast in your inbox! \n\n**Note**: Ensure `SENDER_EMAIL` and `SENDER_EMAIL_PASSWORD` are configured in AI Workbench"
+                    )
+                    recipient_email = gr.Textbox(
+                        label="Recipient email", placeholder="Enter email here"
+                    )
+
                 generate_button = gr.Button("Generate Podcast")
 
             with gr.Tab("Agent Configurations"):
@@ -128,11 +138,21 @@ with gr.Blocks(css=css, js=js_func) as demo:
                 with gr.Row(elem_id="config-row"):
                     with gr.Column():
                         with gr.Group(elem_id="config-wrapper"):
-                            with gr.Row(elem_id="config-toolbar", elem_classes=["toolbar"]):
-                                file_title = gr.Markdown(_PSEUDO_FILE_NAME, elem_id="editor-title")
-                                save_btn = gr.Button("", icon=_SAVE_IMG, elem_classes=["toolbar"])
-                                undo_btn = gr.Button("", icon=_UNDO_IMG, elem_classes=["toolbar"])
-                                reset_btn = gr.Button("", icon=_HISTORY_IMG, elem_classes=["toolbar"])
+                            with gr.Row(
+                                elem_id="config-toolbar", elem_classes=["toolbar"]
+                            ):
+                                file_title = gr.Markdown(
+                                    _PSEUDO_FILE_NAME, elem_id="editor-title"
+                                )
+                                save_btn = gr.Button(
+                                    "", icon=_SAVE_IMG, elem_classes=["toolbar"]
+                                )
+                                undo_btn = gr.Button(
+                                    "", icon=_UNDO_IMG, elem_classes=["toolbar"]
+                                )
+                                reset_btn = gr.Button(
+                                    "", icon=_HISTORY_IMG, elem_classes=["toolbar"]
+                                )
                             with gr.Row(elem_id="config-row-box"):
                                 editor = gr.Code(
                                     elem_id="config-editor",
@@ -148,14 +168,19 @@ with gr.Blocks(css=css, js=js_func) as demo:
 
         with gr.Column(scale=1):
             gr.Markdown("<br />")
-            output = gr.Textbox(label="Outputs", placeholder="Outputs will show here when executing", max_lines=20, lines=20)
+            output = gr.Textbox(
+                label="Outputs",
+                placeholder="Outputs will show here when executing",
+                max_lines=20,
+                lines=20,
+            )
             output_file = gr.File(visible=False, interactive=False)
             transcript_file = gr.File(visible=False, interactive=False)
             history_file = gr.File(visible=False, interactive=False)
 
     timer = gr.Timer()
     timer.tick(logger.read_logs, None, output)
-    
+
     def read_chain_config() -> str:
         """Read the chain config file."""
         with open("/project/models.json", "r", encoding="UTF-8") as cf:
@@ -165,7 +190,7 @@ with gr.Blocks(css=css, js=js_func) as demo:
 
     undo_btn.click(read_chain_config, outputs=editor)
     undo_btn.click(None, js=_SAVE_CHANGES_JS)
-    
+
     @reset_btn.click(outputs=editor)
     def reset_demo() -> str:
         """Reset the configuration to the starting config."""
@@ -176,7 +201,7 @@ with gr.Blocks(css=css, js=js_func) as demo:
         """Save the user's config file."""
         # validate json
         try:
-            config_data = json.loads(config_txt)
+            json.loads(config_txt)
         except Exception as err:
             raise SyntaxError(f"Error validating JSON syntax:\n{err}") from err
 
@@ -192,7 +217,7 @@ with gr.Blocks(css=css, js=js_func) as demo:
     def validate_sender(sender):
         if sender is None:
             return False
-        regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         return bool(re.match(regex, sender))
 
     def get_transcript(filename, job_id):
@@ -200,7 +225,7 @@ with gr.Blocks(css=css, js=js_func) as demo:
         url = f"{service}/saved_podcast/{job_id}/transcript"
         params = {"userId": "test-userid"}
         filepath = "/project/frontend/demo_outputs/transcript_" + filename + ".json"
-        
+
         response = requests.get(url, params=params)
         if response.status_code == 200:
             json_data = response.json()
@@ -216,7 +241,9 @@ with gr.Blocks(css=css, js=js_func) as demo:
         service = os.environ["API_SERVICE_URL"]
         url = f"{service}/saved_podcast/{job_id}/history"
         params = {"userId": "test-userid"}
-        filepath = "/project/frontend/demo_outputs/generation_history_" + filename + ".json"
+        filepath = (
+            "/project/frontend/demo_outputs/generation_history_" + filename + ".json"
+        )
         response = requests.get(url, params=params)
 
         if response.status_code == 200:
@@ -231,43 +258,108 @@ with gr.Blocks(css=css, js=js_func) as demo:
 
     def generate_podcast(target, context, recipient, settings):
         if target is None or len(target) == 0:
-            gr.Warning("Target PDF upload not detected. Please upload a target PDF file and try again. ")
+            gr.Warning(
+                "Target PDF upload not detected. Please upload a target PDF file and try again. "
+            )
             return gr.update(visible=False)
-        
-        sender_email = os.environ["SENDER_EMAIL"] if "SENDER_EMAIL" in os.environ else None
-        
+
+        sender_email = (
+            os.environ["SENDER_EMAIL"] if "SENDER_EMAIL" in os.environ else None
+        )
+
         if isinstance(target, str):
             target = [target]
         if isinstance(context, str):
             context = [context]
-        
+
         base_url = os.environ["API_SERVICE_URL"]
         monologue = True if "Monologue Only" in settings else False
-        vdb = False # True if "Vector Database" in settings else False
+        vdb = False  # True if "Vector Database" in settings else False
         filename = str(uuid.uuid4())
         sender_validation = validate_sender(sender_email)
         if not sender_validation and len(recipient) > 0:
-            gr.Warning("SENDER_EMAIL not detected or malformed. Please fix or remove recipient email and try again. You may need to restart the container for Environment Variable changes to take effect. ")
+            gr.Warning(
+                "SENDER_EMAIL not detected or malformed. Please fix or remove recipient email and try again. You may need to restart the container for Environment Variable changes to take effect. "
+            )
             return gr.update(visible=False)
-        elif sender_validation and len(recipient) > 0 and "SENDER_EMAIL_PASSWORD" not in os.environ: 
-            gr.Warning("SENDER_EMAIL_PASSWORD not detected. Please fix or remove recipient email and try again. You may need to restart the container for Environment Variable changes to take effect. ")
+        elif (
+            sender_validation
+            and len(recipient) > 0
+            and "SENDER_EMAIL_PASSWORD" not in os.environ
+        ):
+            gr.Warning(
+                "SENDER_EMAIL_PASSWORD not detected. Please fix or remove recipient email and try again. You may need to restart the container for Environment Variable changes to take effect. "
+            )
             return gr.update(visible=False)
-        email = [recipient] if (sender_validation and len(recipient) > 0 and "SENDER_EMAIL_PASSWORD" in os.environ) else [filename + "@"] # delimiter
+        email = (
+            [recipient]
+            if (
+                sender_validation
+                and len(recipient) > 0
+                and "SENDER_EMAIL_PASSWORD" in os.environ
+            )
+            else [filename + "@"]
+        )  # delimiter
 
         # Generate podcast
         job_id = email_demo.test_api(base_url, target, context, email, monologue, vdb)
 
         # Send file via email
-        if sender_validation and len(recipient) > 0 and "SENDER_EMAIL_PASSWORD" in os.environ:
-            email_demo.send_file_via_email("/project/frontend/demo_outputs/" + recipient.split('@')[0] + "-output.mp3", sender_email, recipient)
-            return gr.update(value="/project/frontend/demo_outputs/" + recipient.split('@')[0] + "-output.mp3", label="podcast audio", visible=True), gr.update(value=get_transcript(recipient.split('@')[0], job_id), label="podcast transcript", visible=True), gr.update(value=get_history(recipient.split('@')[0], job_id), label="generation history", visible=True)
+        if (
+            sender_validation
+            and len(recipient) > 0
+            and "SENDER_EMAIL_PASSWORD" in os.environ
+        ):
+            email_demo.send_file_via_email(
+                "/project/frontend/demo_outputs/"
+                + recipient.split("@")[0]
+                + "-output.mp3",
+                sender_email,
+                recipient,
+            )
+            return (
+                gr.update(
+                    value="/project/frontend/demo_outputs/"
+                    + recipient.split("@")[0]
+                    + "-output.mp3",
+                    label="podcast audio",
+                    visible=True,
+                ),
+                gr.update(
+                    value=get_transcript(recipient.split("@")[0], job_id),
+                    label="podcast transcript",
+                    visible=True,
+                ),
+                gr.update(
+                    value=get_history(recipient.split("@")[0], job_id),
+                    label="generation history",
+                    visible=True,
+                ),
+            )
 
-        return gr.update(value="/project/frontend/demo_outputs/" + filename + "-output.mp3", label="podcast audio", visible=True), gr.update(value=get_transcript(filename, job_id), label="podcast transcript", visible=True), gr.update(value=get_history(filename, job_id), label="generation history", visible=True)
+        return (
+            gr.update(
+                value="/project/frontend/demo_outputs/" + filename + "-output.mp3",
+                label="podcast audio",
+                visible=True,
+            ),
+            gr.update(
+                value=get_transcript(filename, job_id),
+                label="podcast transcript",
+                visible=True,
+            ),
+            gr.update(
+                value=get_history(filename, job_id),
+                label="generation history",
+                visible=True,
+            ),
+        )
 
-    generate_button.click(generate_podcast, [target_files, 
-                                             context_files, 
-                                             recipient_email, 
-                                             settings], [output_file, transcript_file, history_file])
+    generate_button.click(
+        generate_podcast,
+        [target_files, context_files, recipient_email, settings],
+        [output_file, transcript_file, history_file],
+    )
 
 # Launch Gradio app
 if __name__ == "__main__":

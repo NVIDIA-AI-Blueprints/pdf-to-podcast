@@ -16,13 +16,13 @@ from shared.pdf_types import PDFMetadata
 def test_transcribe_api():
     """
     Test the transcription API workflow.
-    
+
     This test function:
     1. Creates a TranscriptionRequest with sample PDF metadata
     2. Submits the request to the transcribe endpoint
     3. Polls the job status until completion
     4. Verifies the job completes successfully
-    
+
     Raises:
         AssertionError: If any step of the workflow fails or times out
     """
@@ -63,9 +63,9 @@ def test_transcribe_api():
     response = requests.post(TRANSCRIBE_URL, json=request.model_dump())
 
     # Check if the request was successful
-    assert (
-        response.status_code == 202
-    ), f"Expected status code 202, but got {response.status_code}. Response: {response.text}"
+    assert response.status_code == 202, (
+        f"Expected status code 202, but got {response.status_code}. Response: {response.text}"
+    )
 
     # Parse the JSON response
     try:

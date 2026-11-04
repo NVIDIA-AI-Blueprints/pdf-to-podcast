@@ -172,7 +172,7 @@ class TTSService:
                 job_manager.update_status(
                     job_id,
                     JobStatus.PROCESSING,
-                    f"Processing batch {i//MAX_CONCURRENT_REQUESTS + 1} of {(len(tasks)-1)//MAX_CONCURRENT_REQUESTS + 1}",
+                    f"Processing batch {i // MAX_CONCURRENT_REQUESTS + 1} of {(len(tasks) - 1) // MAX_CONCURRENT_REQUESTS + 1}",
                 )
 
                 futures = [

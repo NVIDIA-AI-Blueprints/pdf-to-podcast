@@ -39,7 +39,7 @@ class StorageManager:
     """
 
     def __init__(self, telemetry: OpenTelemetryInstrumentation):
-        """Initialize MinIO client and ensure bucket exists. 
+        """Initialize MinIO client and ensure bucket exists.
         requires: OpenTelemetryInstrumentation instance for tracing since Minio
         does not have an auto otel instrumentor
 

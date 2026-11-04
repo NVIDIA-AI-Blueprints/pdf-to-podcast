@@ -20,6 +20,7 @@ class TranscriptionParams:
         model (str): Model to use for transcription
         voice_mapping (Dict[str, str]): Mapping of speaker IDs to voice IDs
     """
+
     name: str
     duration: int
     speaker_1_name: str
@@ -138,7 +139,7 @@ class StorageManager:
 
 def test_storage_manager():
     """Run tests for StorageManager functionality.
-    
+
     Tests include:
     1. Initialization of StorageManager
     2. Storing audio file
