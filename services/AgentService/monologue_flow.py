@@ -5,7 +5,10 @@ This module handles the workflow for generating single-speaker podcast content f
 It includes functionality for summarizing PDFs, generating outlines, and creating monologue scripts.
 """
 
-from shared.api_types import JobStatus, TranscriptionRequest  # Job status tracking and request types
+from shared.api_types import (
+    JobStatus,
+    TranscriptionRequest,
+)  # Job status tracking and request types
 from shared.podcast_types import Conversation  # Podcast conversation data structures
 from shared.pdf_types import PDFMetadata  # PDF document metadata and content
 from shared.llmmanager import LLMManager  # LLM interaction management

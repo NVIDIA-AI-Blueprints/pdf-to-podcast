@@ -326,7 +326,7 @@ TEMPLATES: Dict[str, jinja2.Template] = {
 class PodcastPrompts:
     """
     A class providing access to podcast-related prompt templates.
-    
+
     This class manages a collection of Jinja2 templates used for generating
     various prompts in the podcast creation process, from PDF summarization
     to dialogue generation.
@@ -343,7 +343,7 @@ class PodcastPrompts:
         get_template(name: str) -> jinja2.Template:
             Retrieves pre-compiled Jinja2 templates by name
     """
-    
+
     def __getattr__(self, name: str) -> str:
         """
         Dynamically retrieve prompt templates by name.

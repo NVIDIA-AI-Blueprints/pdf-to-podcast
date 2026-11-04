@@ -16,13 +16,13 @@ logger = logging.getLogger(__name__)
 class ConnectionManager:
     """
     Manages WebSocket connections and Redis pub/sub for real-time status updates.
-    
+
     This class handles:
     - WebSocket connections for each job ID
     - Redis pub/sub subscription for status updates
     - Broadcasting messages to connected clients
     - Connection cleanup and resource management
-    
+
     Attributes:
         active_connections (Dict[str, Set[WebSocket]]): Maps job IDs to sets of active WebSocket connections
         pubsub: Redis pub/sub connection
@@ -35,7 +35,7 @@ class ConnectionManager:
     def __init__(self, redis_client: redis.Redis):
         """
         Initialize the connection manager.
-        
+
         Args:
             redis_client (redis.Redis): Redis client for pub/sub functionality
         """
@@ -49,7 +49,7 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket, job_id: str):
         """
         Accept a new WebSocket connection for a job.
-        
+
         Args:
             websocket (WebSocket): The WebSocket connection to accept
             job_id (str): ID of the job this connection is monitoring
@@ -71,7 +71,7 @@ class ConnectionManager:
     def disconnect(self, websocket: WebSocket, job_id: str):
         """
         Remove a WebSocket connection for a job.
-        
+
         Args:
             websocket (WebSocket): The WebSocket connection to remove
             job_id (str): ID of the job the connection was monitoring
@@ -87,7 +87,7 @@ class ConnectionManager:
     def _redis_listener(self):
         """
         Background thread that listens for Redis pub/sub messages.
-        
+
         Subscribes to the status_updates:all channel and queues received messages
         for processing by the async message processor.
         """
@@ -122,7 +122,7 @@ class ConnectionManager:
     async def _process_messages(self):
         """
         Async task that processes queued messages and broadcasts them to clients.
-        
+
         Continuously checks the message queue and broadcasts valid messages
         to all connected WebSocket clients for the relevant job ID.
         """
@@ -166,7 +166,7 @@ class ConnectionManager:
     async def broadcast_to_job(self, job_id: str, message: dict):
         """
         Send a message to all WebSocket connections for a specific job.
-        
+
         Args:
             job_id (str): ID of the job to broadcast to
             message (dict): Message to broadcast to all connections
@@ -189,7 +189,7 @@ class ConnectionManager:
     def cleanup(self):
         """
         Clean up resources used by the connection manager.
-        
+
         Stops the Redis listener thread and closes the pub/sub connection.
         """
         self.should_stop = True

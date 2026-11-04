@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class PromptTracker:
     """Track prompts and responses and save them to storage.
-    
+
     This class provides functionality to track and store prompts, responses and processing
     steps for a given job. It maintains a history of interactions that can be persisted
     to storage.
@@ -76,7 +76,7 @@ class PromptTracker:
 
     def _save(self):
         """Save the current state to storage
-        
+
         Converts the tracked steps to JSON format and stores them using the storage manager.
         The file is saved with a name based on the job_id.
         """

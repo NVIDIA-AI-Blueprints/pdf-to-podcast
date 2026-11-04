@@ -6,6 +6,7 @@ from enum import Enum
 
 class JobStatus(str, Enum):
     """Enum representing the possible states of a job."""
+
     PENDING = "pending"  # Job has been created but not started
     PROCESSING = "processing"  # Job is currently being processed
     COMPLETED = "completed"  # Job has finished successfully
@@ -14,6 +15,7 @@ class JobStatus(str, Enum):
 
 class ServiceType(str, Enum):
     """Enum representing the different service types in the system."""
+
     PDF = "pdf"  # PDF processing service
     AGENT = "agent"  # Agent/LLM service
     TTS = "tts"  # Text-to-speech service
@@ -21,6 +23,7 @@ class ServiceType(str, Enum):
 
 class StatusUpdate(BaseModel):
     """Model for job status updates sent between services."""
+
     job_id: str
     status: JobStatus
     message: Optional[str] = None  # Optional status message
@@ -31,6 +34,7 @@ class StatusUpdate(BaseModel):
 
 class StatusResponse(BaseModel):
     """Model for API status responses."""
+
     status: str  # Overall status of the operation
     result: Optional[str] = None  # Optional success result
     error: Optional[str] = None  # Optional error message
@@ -39,6 +43,7 @@ class StatusResponse(BaseModel):
 
 class TranscriptionParams(BaseModel):
     """Base parameters for podcast transcription requests."""
+
     userId: str = Field(..., description="KAS User ID")
     name: str = Field(..., description="Name of the podcast")
     duration: int = Field(..., description="Duration in minutes")
@@ -71,18 +76,18 @@ class TranscriptionParams(BaseModel):
     def validate_monologue_settings(self) -> "TranscriptionParams":
         """
         Validates the configuration based on monologue/dialogue mode.
-        
+
         For monologue mode:
         - No second speaker name should be provided
         - Voice mapping should only contain speaker-1
-        
+
         For dialogue mode:
         - Second speaker name is required
         - Voice mapping must contain both speakers
-        
+
         Returns:
             TranscriptionParams: The validated model instance
-            
+
         Raises:
             ValueError: If validation fails
         """
@@ -121,12 +126,14 @@ class TranscriptionRequest(TranscriptionParams):
     Complete transcription request model extending TranscriptionParams.
     Includes PDF metadata and job tracking information.
     """
+
     pdf_metadata: List[PDFMetadata]  # List of PDFs to process
     job_id: str  # Unique identifier for the transcription job
 
 
 class RAGRequest(BaseModel):
     """Model for Retrieval-Augmented Generation (RAG) requests."""
+
     query: str = Field(..., description="The search query to process")
     k: int = Field(..., description="Number of results to retrieve", ge=1)
     job_id: str = Field(..., description="The unique job identifier")

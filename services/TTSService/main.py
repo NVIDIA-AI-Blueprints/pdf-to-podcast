@@ -64,7 +64,7 @@ class TTSService:
         self.thread_pool = ThreadPoolExecutor(max_workers=MAX_CONCURRENT_REQUESTS)
         self.httpx_client = httpx.Client()
         self.eleven_labs_client = ElevenLabs(
-            api_key=os.getenv("ELEVENLABS_API_KEY"),
+            api_key=os.getenv("ELEVENLABS_API_KEY", "").strip() or None,
             httpx_client=self.httpx_client,
             timeout=120,
         )
@@ -135,7 +135,7 @@ class TTSService:
                 )
 
                 combined_audio = await self._process_dialogue(
-                    job_id, request.dialogue, request.voice_mapping
+                    job_id, request.dialogue, voice_mapping
                 )
 
                 job_manager.set_result(job_id, combined_audio)
@@ -172,7 +172,7 @@ class TTSService:
                 job_manager.update_status(
                     job_id,
                     JobStatus.PROCESSING,
-                    f"Processing batch {i//MAX_CONCURRENT_REQUESTS + 1} of {(len(tasks)-1)//MAX_CONCURRENT_REQUESTS + 1}",
+                    f"Processing batch {i // MAX_CONCURRENT_REQUESTS + 1} of {(len(tasks) - 1) // MAX_CONCURRENT_REQUESTS + 1}",
                 )
 
                 futures = [

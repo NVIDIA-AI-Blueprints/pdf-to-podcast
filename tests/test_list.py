@@ -11,10 +11,10 @@ from datetime import datetime
 
 def format_timestamp(timestamp_str: str) -> str:
     """Format an ISO timestamp string into a more readable format.
-    
+
     Args:
         timestamp_str (str): ISO format timestamp string with timezone info
-        
+
     Returns:
         str: Formatted timestamp string in the format "Month DD, YYYY at HH:MM AM/PM"
     """
@@ -24,16 +24,16 @@ def format_timestamp(timestamp_str: str) -> str:
 
 def list_saved_podcasts():
     """Retrieve and display a list of all saved podcasts from the API.
-    
+
     Makes a GET request to the /saved_podcasts endpoint and prints details of each podcast
     including:
     - Job ID
     - Filename
     - Creation timestamp
     - Transcription parameters
-    
+
     Handles various error cases like connection failures and invalid responses.
-    
+
     Environment Variables:
         API_SERVICE_URL: Base URL of the API service (default: http://localhost:8002)
     """

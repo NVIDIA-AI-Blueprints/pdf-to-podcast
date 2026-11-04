@@ -8,9 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/ruff-action@v1
+      - uses: astral-sh/ruff-action@v4.1.0
         with:
+          version: "0.17.3"
           args: "format --check"
-      - uses: astral-sh/ruff-action@v1
+      - uses: astral-sh/ruff-action@v4.1.0
         with:
-          args: "check --diff"
+          version: "0.17.3"
+          args: "check"

@@ -15,10 +15,10 @@ JOB_ID = "1730947535"
 
 def test_transcript():
     """Test the transcript retrieval endpoint.
-    
+
     Makes a GET request to retrieve the transcript for a specific job ID.
     Prints the transcript content if successful, otherwise prints error details.
-    
+
     Environment Variables:
         API_SERVICE_URL: Base URL of the API service (default: http://localhost:8002)
     """
@@ -48,10 +48,10 @@ def test_transcript():
 
 def test_prompt_tracker():
     """Test the prompt history retrieval endpoint.
-    
+
     Makes a GET request to retrieve the prompt generation history for a specific job ID.
     Prints the history content if successful, otherwise prints error details.
-    
+
     Environment Variables:
         API_SERVICE_URL: Base URL of the API service (default: http://localhost:8002)
     """

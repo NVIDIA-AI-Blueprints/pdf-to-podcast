@@ -8,7 +8,7 @@ services:
       - app-network
 
   minio:
-    image: minio/minio:latest
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -37,6 +37,7 @@ services:
       - AGENT_SERVICE_URL=http://agent-service:8964
       - TTS_SERVICE_URL=http://tts-service:8889
       - REDIS_URL=redis://redis:6379
+      - NV_INGEST_RETRIEVE_URL=${NV_INGEST_RETRIEVE_URL:-https://nv-ingest-rest-endpoint.brevlab.com/v1}
     depends_on:
       - redis
       - pdf-service
