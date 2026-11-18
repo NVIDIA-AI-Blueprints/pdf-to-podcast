@@ -18,8 +18,7 @@ For more information about the PDF, Agent and TTS service flows, please refer to
 - NVIDIA NIM microservices
    - Response generation (Inference)
       - [NIM for meta/llama-3.1-8b-instruct](https://build.nvidia.com/meta/llama-3_1-8b-instruct)
-      - [NIM for meta/llama-3.1-70b-instruct](https://build.nvidia.com/meta/llama-3_1-70b-instruct)
-      - [NIM for nvidia/llama-3.3-nemotron-super-49b-v1.5](https://build.nvidia.com/nvidia/llama-3_3-nemotron-super-49b-v1_5)
+      - [NIM for nvidia/nemotron-3.5-lightning-30b-a3b](https://build.nvidia.com/nvidia/nemotron-3_5-lightning-30b-a3b)
 - Document ingest and extraction - [Docling](https://github.com/DS4SD/docling)
 - Text-to-speech - [ElevenLabs](https://elevenlabs.io/)
 - Redis - [Redis](https://redis.io/)
@@ -70,7 +69,7 @@ Install software requirements:
 NVIDIA Inference Microservices (NIM)
 - There are two possible methods to generate an API key for NIM:
    - Sign in to the [NVIDIA Build](https://build.nvidia.com/explore/discover?signin=true) portal with your email.
-      - Click on any [model](https://build.nvidia.com/meta/llama-3_1-70b-instruct), then click "Get API Key", and finally click "Generate Key".
+      - Click on any [model](https://build.nvidia.com/nvidia/nemotron-3_5-lightning-30b-a3b), then click "Get API Key", and finally click "Generate Key".
    - Sign in to the [NVIDIA NGC](https://ngc.nvidia.com/) portal with your email.
       - Select your organization from the dropdown menu after logging in. You must select an organization which has NVIDIA AI Enterprise (NVAIE) enabled.
       - Click on your account in the top right, select "Setup" from the dropdown.

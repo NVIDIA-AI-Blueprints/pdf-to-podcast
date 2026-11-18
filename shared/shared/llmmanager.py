@@ -62,15 +62,15 @@ class LLMManager:
 
     DEFAULT_CONFIGS = {
         "reasoning": {
-            "name": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+            "name": "nvidia/nemotron-3.5-lightning-30b-a3b",
             "api_base": "https://integrate.api.nvidia.com/v1",
         },
         "iteration": {
-            "name": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+            "name": "nvidia/nemotron-3.5-lightning-30b-a3b",
             "api_base": "https://integrate.api.nvidia.com/v1",
         },
         "json": {
-            "name": "meta/llama-3.1-70b-instruct",
+            "name": "nvidia/nemotron-3.5-lightning-30b-a3b",
             "api_base": "https://integrate.api.nvidia.com/v1",
         },
     }
